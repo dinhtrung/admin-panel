@@ -8,15 +8,20 @@
     <meta name="color-scheme" content="light dark" />
     <title>admin-panel</title>
     <script>
-      // Appearance is resolved before the first paint: stored choice first, then the OS
-      // preference. Without this the browser paints the default theme and then swaps it,
-      // which is a visible defect on every reload and every deep link.
+      // Appearance is resolved before the first paint: the stored choice if it is a registered
+      // appearance, otherwise the OS preference. Without this the browser paints the default and
+      // then swaps it, which is a visible defect on every reload and every deep link.
+      //
+      // The id list mirrors `src/lib/appearance.ts`. This script runs before paint, so it cannot
+      // import the registry — keep the two in step when an appearance is added.
       (function () {
+        var APPEARANCES = ["light", "dark", "dusk"];
         try {
-          var choice = localStorage.getItem("admin-panel.appearance") || "system";
-          var dark = choice === "dark" ||
-            (choice === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-          document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+          var stored = localStorage.getItem("admin-panel.appearance") || "system";
+          var resolved = APPEARANCES.indexOf(stored) >= 0
+            ? stored
+            : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+          document.documentElement.setAttribute("data-theme", resolved);
           // Display density is applied here too: it has to be in effect on the first paint, or the
           // board reflows once the app mounts.
           var density = localStorage.getItem("admin-panel.density");

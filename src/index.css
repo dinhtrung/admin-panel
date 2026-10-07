@@ -19,6 +19,11 @@
   Source palette: COLOURlovers 1004609 "Yoko Hanako 1109" by _Mac_DyE_
   (#181818 #F0F0F0 #D5DEF0 #903078 #483048). Provenance: docs/design/palette.md
   Derived values are tints of the palette only; no sixth hue is introduced.
+
+  This file is the whole registry's token side: `:root` is the light appearance, and each
+  `[data-theme="…"]` block remaps the same semantic roles for one more appearance. Adding an
+  appearance is a block here plus an entry in src/lib/appearance.ts — no component changes.
+  The role names are the contract: every appearance must define every role below.
 */
 :root {
   color-scheme: light;
@@ -84,6 +89,46 @@
   --focus: var(--palette-tint);
 
   --overlay-shadow: 0 12px 28px -12px rgb(0 0 0 / 0.7);
+}
+
+/* The third appearance, seeded by a second pinned palette: COLOURlovers 100429 "Stormy Dusk" by junyr
+   (#0E7583 #ABC5C9 #4A4B4B #083A52 #1A3E42) — provenance and measured pairs in
+   docs/design/palette.md. A low-glare appearance for dim rooms: the clinical white is punishing at
+   night and the full-ink appearance loses the printed-board feel, so this one sits between them.
+   Composed, not inverted: its own mist ground, its own deep-teal rail, its own ink. The semantic
+   hues (attention, plum) stay the colours they are in every appearance, because a state that changes
+   colour when you change the lighting is a state you cannot learn. */
+[data-theme="dusk"] {
+  color-scheme: light;
+
+  --palette-dusk-teal: #0e7583;
+  --palette-dusk-mist: #abc5c9;
+  --palette-dusk-slate: #4a4b4b;
+  --palette-dusk-deep: #083a52;
+  --palette-dusk-charcoal: #1a3e42;
+
+  --board-ground: var(--palette-dusk-mist);
+  --board-panel: color-mix(in srgb, var(--palette-dusk-mist) 32%, #ffffff);
+  --board-rail: var(--palette-dusk-deep);
+  --board-rail-ink: var(--palette-dusk-mist);
+  --board-hover: color-mix(in srgb, var(--palette-dusk-charcoal) 12%, transparent);
+  --board-selected: color-mix(in srgb, var(--palette-dusk-teal) 30%, var(--palette-dusk-mist));
+
+  --ink: var(--palette-dusk-charcoal);
+  --ink-muted: var(--palette-dusk-slate);
+
+  --rule: color-mix(in srgb, var(--palette-dusk-charcoal) 24%, transparent);
+  --rule-strong: color-mix(in srgb, var(--palette-dusk-charcoal) 48%, transparent);
+
+  --attention: var(--palette-attention);
+  --on-attention: #ffffff;
+  --plum: var(--palette-plum);
+  --on-plum: var(--palette-ground);
+  /* #903078 measures under the ring threshold on this ground; the deep swatch carries focus instead,
+     the same way the dark appearance hands focus to the tint rather than to the attention colour. */
+  --focus: var(--palette-dusk-deep);
+
+  --overlay-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.45);
 }
 
 /* The compact step, chosen in Settings and applied before the first paint by the inline script. */

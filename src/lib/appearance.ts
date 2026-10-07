@@ -1,31 +1,81 @@
-/** Appearance: system, light or dark — one resolution path, applied before paint by the inline
- *  script in index.html and kept in sync here. */
+/** Appearance: a registry of named appearances, resolved in one place.
+ *
+ *  An appearance is a set of the design system's semantic role tokens (defined in `src/index.css`),
+ *  not a code path: adding one means adding a token block and an entry here, and nothing in a
+ *  component, screen or shell file changes. The inline script in `index.html` resolves the same
+ *  choice before the first paint — it cannot import this module, so it mirrors the id list and says
+ *  so; keep the two in step.
+ */
 
-export type Appearance = "system" | "light" | "dark";
+export type AppearanceId = "light" | "dark" | "dusk";
+
+/** What the operator can choose: an appearance, or the machine's preference. */
+export type AppearanceChoice = "system" | AppearanceId;
+
+export type AppearanceDefinition = {
+  id: AppearanceId;
+  label: string;
+  /** What the document declares to the browser, so native widgets match the appearance. */
+  colorScheme: "light" | "dark";
+  /** The single region that owns a saturated ground in this appearance (the committed-rail rule). */
+  saturatedRegion: string;
+};
+
+export const APPEARANCES: AppearanceDefinition[] = [
+  {
+    id: "light",
+    label: "Light",
+    colorScheme: "light",
+    saturatedRegion: "the navigation rail, in ink",
+  },
+  {
+    id: "dark",
+    label: "Dark",
+    colorScheme: "dark",
+    saturatedRegion: "the navigation rail, in plum",
+  },
+  {
+    id: "dusk",
+    label: "Dusk",
+    colorScheme: "light",
+    saturatedRegion: "the navigation rail, in plum",
+  },
+];
+
+export const APPEARANCE_IDS: AppearanceId[] = APPEARANCES.map((appearance) => appearance.id);
 
 export const APPEARANCE_KEY = "admin-panel.appearance";
 
-export function readAppearance(): Appearance {
+export function isAppearanceId(value: string | null): value is AppearanceId {
+  return value !== null && (APPEARANCE_IDS as string[]).includes(value);
+}
+
+/** The stored choice, or the machine's preference. A stale or unknown id falls back to the machine. */
+export function readAppearance(): AppearanceChoice {
   try {
     const raw = localStorage.getItem(APPEARANCE_KEY);
-    return raw === "light" || raw === "dark" ? raw : "system";
+    return isAppearanceId(raw) ? raw : "system";
   } catch {
     return "system";
   }
 }
 
-export function resolvedAppearance(choice: Appearance): "light" | "dark" {
-  if (choice === "light" || choice === "dark") return choice;
+export function resolvedAppearance(choice: AppearanceChoice): AppearanceId {
+  if (choice !== "system") return choice;
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
-export function applyAppearance(choice: Appearance): void {
-  document.documentElement.setAttribute("data-theme", resolvedAppearance(choice));
+export function applyAppearance(choice: AppearanceChoice): void {
+  const resolved = resolvedAppearance(choice);
+  document.documentElement.setAttribute("data-theme", resolved);
   const meta = document.querySelector('meta[name="color-scheme"]');
-  if (meta) meta.setAttribute("content", choice === "system" ? "light dark" : choice);
+  if (meta) {
+    const declared = choice === "system" ? "light dark" : (APPEARANCES.find((a) => a.id === choice)?.colorScheme ?? "light");
+    meta.setAttribute("content", declared);
+  }
 }
 
-export function writeAppearance(choice: Appearance): void {
+export function writeAppearance(choice: AppearanceChoice): void {
   try {
     localStorage.setItem(APPEARANCE_KEY, choice);
   } catch {

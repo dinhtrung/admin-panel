@@ -51,6 +51,36 @@
         "displayName": "Overlay Shadow (dark)",
         "canonical": "#000000B3",
         "tonalRamp": ["#0000001A", "#00000033", "#0000004D", "#00000073", "#000000B3", "#000000D9", "#000000F2", "#000000"]
+      },
+      "dusk-mist": {
+        "role": "neutral",
+        "displayName": "Dusk Ground (mist)",
+        "canonical": "#ABC5C9",
+        "tonalRamp": ["#1A3E42", "#4A4B4B", "#7B9BA1", "#ABC5C9", "#C4D6D9", "#DCE7E9", "#EDF3F4", "#FFFFFF"]
+      },
+      "dusk-teal": {
+        "role": "accent",
+        "displayName": "Dusk Teal (selection)",
+        "canonical": "#0E7583",
+        "tonalRamp": ["#04262C", "#083A52", "#0A5A66", "#0E7583", "#3E97A3", "#77BAC2", "#B5D8DD", "#E4F1F3"]
+      },
+      "dusk-slate": {
+        "role": "neutral",
+        "displayName": "Dusk Slate (secondary text)",
+        "canonical": "#4A4B4B",
+        "tonalRamp": ["#1A1B1B", "#2F3030", "#4A4B4B", "#666767", "#8A8B8B", "#AFAFB0", "#D2D3D3", "#F2F2F2"]
+      },
+      "dusk-deep": {
+        "role": "accent",
+        "displayName": "Dusk Deep (rail, focus)",
+        "canonical": "#083A52",
+        "tonalRamp": ["#03141C", "#062C3F", "#083A52", "#0B5474", "#187a9d", "#4FA3C0", "#93C8DA", "#D7ECF3"]
+      },
+      "dusk-charcoal": {
+        "role": "neutral",
+        "displayName": "Dusk Ink (charcoal)",
+        "canonical": "#1A3E42",
+        "tonalRamp": ["#0C1D20", "#1A3E42", "#2C5559", "#457276", "#6E979B", "#9EBDC0", "#CBDCDD", "#EDF3F4"]
       }
     },
     "typographyMeta": {

@@ -16,6 +16,14 @@ colors:
   overlay-scrim: "#1818188C"
   shadow-soft: "#00000073"
   shadow-deep: "#000000B3"
+  # The third appearance's seed palette (COLOURlovers 100429 "Stormy Dusk" by junyr). Recorded here
+  # because these five swatches are the appearance's whole colour vocabulary — provenance and the
+  # role each took are in docs/design/palette.md.
+  dusk-mist: "#ABC5C9"
+  dusk-teal: "#0E7583"
+  dusk-slate: "#4A4B4B"
+  dusk-deep: "#083A52"
+  dusk-charcoal: "#1A3E42"
 typography:
   display:
     fontFamily: "Archivo Variable, ui-sans-serif, system-ui, sans-serif"
@@ -229,6 +237,32 @@ tinted band; a state change moves a token rather than animating a surface.
 ### Named Rules
 **The Ruled-Not-Shadowed Rule.** If two regions need separating, draw a line. Reach for the overlay
 shadow only when the region floats above the board and can be dismissed.
+
+## Appearances
+
+Appearance is a **registry**, not a light/dark pair. An appearance is a named set of the semantic role
+tokens in `src/index.css`; registering one is a token block plus an entry in `src/lib/appearance.ts`,
+and no component, screen or shell file changes. The control lists the registry, and a stored id that is
+no longer registered falls back to the machine's preference instead of leaving the board unstyled.
+
+Three ship today:
+
+| Appearance | Seed | Ground | Rail — the one saturated region | Use scene |
+|---|---|---|---|---|
+| **Light** | "Yoko Hanako 1109", COLOURlovers 1004609 | `#F0F0F0` | ink `#181818` | the workstation in daylight |
+| **Dark** | the same palette, roles remapped | `#181818` | plum `#483048` | a dark room, a screen at night |
+| **Dusk** | "Stormy Dusk", COLOURlovers 100429 | mist `#ABC5C9` | deep `#083A52` | dim light: less glare than Light, still a printed board rather than a black screen |
+
+Rules that hold in every appearance:
+
+- **Composed, never inverted.** Each appearance defines its own surfaces, ink and rules from its own
+  seed. Dusk is not "Light, but blue", and Dark is not Light flipped.
+- **One saturated region.** Exactly one region owns a saturated ground, and it is the rail.
+- **Semantics do not move.** Attention and plum keep their hues in every appearance. A state that
+  changes colour when the lighting changes is a state the operator cannot learn — the appearance
+  changes the board, not the vocabulary of state.
+- **Measured, not asserted.** Every text, control and focus pair is computed from the tokens as the
+  browser resolves them, and recorded in [`docs/design/palette.md`](docs/design/palette.md).
 
 ## Icons and marks
 

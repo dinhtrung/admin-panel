@@ -1,15 +1,17 @@
-/** Appearance control: system, light, dark — a real radio group, not three icon buttons that lie
- *  about their state. */
+/** Appearance control: the machine's preference plus every registered appearance — a real radio
+ *  group, not four icon buttons that lie about their state. The list comes from the registry, so a
+ *  new appearance appears here without this file changing. */
 
 import { useEffect, useState } from "react";
-import { applyAppearance, readAppearance, watchSystemAppearance, writeAppearance, type Appearance } from "../lib/appearance";
+import {
+  APPEARANCES,
+  applyAppearance,
+  readAppearance,
+  watchSystemAppearance,
+  writeAppearance,
+  type AppearanceChoice,
+} from "../lib/appearance";
 import { cn } from "../lib/cn";
-
-const OPTIONS: { value: Appearance; label: string }[] = [
-  { value: "system", label: "System" },
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-];
 
 export function AppearanceControl({
   compact = false,
@@ -18,7 +20,9 @@ export function AppearanceControl({
   compact?: boolean;
   tone?: "rail" | "panel";
 }) {
-  const [choice, setChoice] = useState<Appearance>(() => (typeof window === "undefined" ? "system" : readAppearance()));
+  const [choice, setChoice] = useState<AppearanceChoice>(() =>
+    typeof window === "undefined" ? "system" : readAppearance(),
+  );
 
   useEffect(() => {
     applyAppearance(choice);
@@ -32,9 +36,18 @@ export function AppearanceControl({
   const selected = tone === "rail" ? "bg-rail-ink text-rail" : "bg-plum text-on-plum";
   const idle = tone === "rail" ? "text-rail-ink/75 hover:text-rail-ink" : "text-ink-muted hover:text-ink";
 
+  const options: { value: AppearanceChoice; label: string }[] = [
+    { value: "system", label: "System" },
+    ...APPEARANCES.map((appearance) => ({ value: appearance.id, label: appearance.label })),
+  ];
+
   return (
-    <div role="radiogroup" aria-label="Appearance" className={cn("inline-flex border", frame, compact ? "w-full" : "")}>
-      {OPTIONS.map((option) => {
+    <div
+      role="radiogroup"
+      aria-label="Appearance"
+      className={cn("inline-flex flex-wrap border", frame, compact ? "w-full" : "")}
+    >
+      {options.map((option) => {
         const isSelected = choice === option.value;
         return (
           <button
@@ -47,7 +60,7 @@ export function AppearanceControl({
               writeAppearance(option.value);
             }}
             className={cn(
-              "relative flex-1 px-2 py-1 text-[0.6875rem] font-semibold transition-colors after:absolute after:-inset-y-1 after:content-['']",
+              "relative min-w-[4.25rem] flex-1 px-2 py-1 text-[0.6875rem] font-semibold transition-colors after:absolute after:-inset-y-1 after:content-['']",
               isSelected ? selected : idle,
             )}
           >

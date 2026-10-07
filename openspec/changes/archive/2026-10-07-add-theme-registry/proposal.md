@@ -15,17 +15,19 @@ whether appearance is genuinely a registry or just two hard-coded cases.
 
 ## What Changes
 
-- **`theme-system` gains four requirements** (it keeps all five it has):
+- **`theme-system` gains three requirements** (it keeps all five it has):
   - an appearance is a **registered set of semantic role tokens**, and the control offers every
-    registered appearance rather than a fixed pair;
-  - registering an appearance is a **token set alone** — no component, screen or shell file changes;
+    registered appearance rather than a fixed pair — registering one is a token set and an entry in
+    the registry, never a change to a component, screen or shell file;
   - every registered appearance is **composed**, not an inversion of another one, and each names the
     region that owns its saturated ground;
   - every registered appearance is **measured against the legibility bar**, with its computed pairs
     recorded next to its definition.
-- **A third appearance ships through the registry**: a low-glare appearance for dim light, which
-  remaps the roles the design system already defines. No new role, no new hue family — it is the same
-  five-swatch palette with its roles remapped, exactly as the dark appearance does it.
+- **A third appearance ships through the registry**: a low-glare appearance for dim light, **seeded by
+  a second pinned COLOURlovers palette** (100429 "Stormy Dusk" by `junyr`, recorded with its archive
+  snapshot in `docs/design/palette.md`). It defines its own surfaces, ink and rules from that palette;
+  the semantic hues — attention and plum — stay the colours they are in every appearance, because a
+  state that changes colour when the lighting changes is a state the operator cannot learn.
 - **The appearance control lists the registry** instead of two hand-written options, and an unknown or
   stale stored appearance falls back to following the machine rather than rendering nothing.
 - **The first-paint resolution covers every registered appearance**, deep links included.
