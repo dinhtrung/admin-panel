@@ -61,6 +61,10 @@
   --plum: var(--palette-plum);
   --on-plum: var(--palette-ground);
   --focus: var(--palette-attention);
+  /* The ring is drawn on whatever surface sits behind the control, and the rail is a different
+     surface from the panels: one colour cannot serve both. Rail controls take the tint (13.14:1 on
+     ink) instead of the attention plum (2.44:1 there). */
+  --focus-rail: var(--palette-tint);
 
   /* one elevation, overlays only */
   --overlay-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.45);
@@ -87,6 +91,7 @@
   --plum: var(--palette-plum);
   --on-plum: var(--palette-ground);
   --focus: var(--palette-tint);
+  --focus-rail: var(--palette-tint);
 
   --overlay-shadow: 0 12px 28px -12px rgb(0 0 0 / 0.7);
 }
@@ -127,6 +132,9 @@
   /* #903078 measures under the ring threshold on this ground; the deep swatch carries focus instead,
      the same way the dark appearance hands focus to the tint rather than to the attention colour. */
   --focus: var(--palette-dusk-deep);
+  /* On the rail the deep swatch would be its own background — a 1.00:1 ring, i.e. no ring at all.
+     The mist carries it there (6.65:1). */
+  --focus-rail: var(--palette-dusk-mist);
 
   --overlay-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.45);
 }
@@ -226,6 +234,15 @@
     outline: 2px solid var(--focus);
     outline-offset: 2px;
     border-radius: var(--radius-chip);
+  }
+
+  /* The ring must contrast with the surface behind the control. The rail is a saturated surface and
+     the panels are not, so rail-surfaced regions re-point `--focus` at the rail's own ring colour —
+     one declaration per region instead of a per-component colour, so a new rail control cannot get
+     this wrong. */
+  aside,
+  [data-rail-surface] {
+    --focus: var(--focus-rail);
   }
 
   a {

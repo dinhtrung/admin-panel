@@ -54,11 +54,16 @@ const STATE_LABEL: Record<FlagState, string> = {
   gradual: "Gradual",
 };
 
-const ENV_LABEL: Record<string, string> = {
-  production: "Production",
-  staging: "Staging",
-  development: "Development",
+/** Environment names in one place: the dense directory uses the short form and keeps the full name in
+ *  the tooltip, the panel and the filter use the full name. */
+const ENV_LABELS: Record<string, { full: string; short: string }> = {
+  production: { full: "Production", short: "PROD" },
+  staging: { full: "Staging", short: "STAGE" },
+  development: { full: "Development", short: "DEV" },
 };
+
+const envFull = (environment: string) => ENV_LABELS[environment]?.full ?? environment;
+const envShort = (environment: string) => ENV_LABELS[environment]?.short ?? environment;
 
 interface FlagForm {
   key: string;
@@ -382,9 +387,9 @@ function FeatureFlagsBoard() {
       header: "Flag",
       sortable: true,
       hideable: false,
-      width: "18rem",
+      width: "11rem",
       cell: (row) => (
-        <div className="flex min-w-0 flex-col">
+        <div className="flex min-w-0 max-w-[11rem] flex-col">
           <span className="truncate text-body font-semibold text-ink" title={row.name}>
             {row.name}
           </span>
@@ -398,9 +403,9 @@ function FeatureFlagsBoard() {
       id: "key",
       header: "Key",
       sortable: false,
-      width: "15rem",
+      width: "8rem",
       cell: (row) => (
-        <span className="font-mono text-[0.6875rem] text-ink" title={row.key}>
+        <span className="block max-w-[8rem] truncate font-mono text-[0.6875rem] text-ink" title={row.key}>
           {row.key}
         </span>
       ),
@@ -409,7 +414,7 @@ function FeatureFlagsBoard() {
       id: "state",
       header: "State",
       sortable: true,
-      width: "6rem",
+      width: "5.5rem",
       cell: (row) => <StatusMagnet status={row.state} />,
     },
     {
@@ -417,31 +422,48 @@ function FeatureFlagsBoard() {
       header: "Rollout",
       sortable: true,
       align: "right",
-      width: "5rem",
+      width: "4rem",
       cell: (row) => <span className="num text-ink">{row.rollout}%</span>,
     },
     {
       id: "environments",
       header: "Environments",
       sortable: false,
-      cell: (row) => (
-        <span className="flex flex-wrap items-center gap-1">
-          {row.environments.map((environment) => (
-            <Badge key={environment} tone="quiet">
-              {ENV_LABEL[environment] ?? environment}
-            </Badge>
-          ))}
-          {row.environments.length === 0 ? <span className="text-ink-muted">None</span> : null}
-        </span>
-      ),
+      width: "6.5rem",
+      cell: (row) => {
+        // One line per row, and a bounded width: the directory shows the first two in their short
+        // form and counts the rest, with every full name in the tooltip. Letting the badges wrap made
+        // row height vary from 52px to 93px on one page, and full labels pushed the table past its
+        // container at a 1280px viewport, which no other grid in the panel does.
+        const shown = row.environments.slice(0, 2);
+        const rest = row.environments.slice(2);
+        return (
+          <span className="flex items-center gap-1 whitespace-nowrap">
+            {row.environments.length === 0 ? <span className="text-ink-muted">None</span> : null}
+            {shown.map((environment) => (
+              <Badge key={environment} tone="quiet" title={envFull(environment)}>
+                {envShort(environment)}
+              </Badge>
+            ))}
+            {rest.length > 0 ? (
+              <span
+                className="num text-[0.6875rem] text-ink-muted"
+                title={rest.map((environment) => envFull(environment)).join(", ")}
+              >
+                +{rest.length}
+              </span>
+            ) : null}
+          </span>
+        );
+      },
     },
     {
       id: "owner",
       header: "Owner",
       sortable: true,
-      width: "10rem",
+      width: "7rem",
       cell: (row) => (
-        <span className="block truncate text-ink" title={row.owner?.email ?? row.ownerId}>
+        <span className="block max-w-[7rem] truncate text-ink" title={row.owner?.email ?? row.ownerId}>
           {row.owner?.name ?? "—"}
         </span>
       ),
@@ -451,7 +473,7 @@ function FeatureFlagsBoard() {
       header: "Last change",
       sortable: true,
       align: "right",
-      width: "8rem",
+      width: "6rem",
       cell: (row) => (
         <span className="num" title={dateTime(row.updatedAt)}>
           {relativeTime(row.updatedAt)}
@@ -464,7 +486,7 @@ function FeatureFlagsBoard() {
       sortable: false,
       hideable: false,
       align: "right",
-      width: "5.5rem",
+      width: "5rem",
       cell: (row) => (
         <Gate permission="flags.write">
           <span className="flex items-center justify-end gap-1">
@@ -527,7 +549,7 @@ function FeatureFlagsBoard() {
                   { value: "", label: "All environments" },
                   ...FLAG_ENVIRONMENTS.map((environment) => ({
                     value: environment,
-                    label: ENV_LABEL[environment] ?? environment,
+                    label: envFull(environment),
                   })),
                 ]}
               />
@@ -659,7 +681,7 @@ function FeatureFlagsBoard() {
                 {FLAG_ENVIRONMENTS.map((environment) => (
                   <Checkbox
                     key={environment}
-                    label={ENV_LABEL[environment] ?? environment}
+                    label={envFull(environment)}
                     checked={form.environments.includes(environment)}
                     onChange={(next) =>
                       setForm((current) => ({

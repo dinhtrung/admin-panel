@@ -114,6 +114,7 @@ composited before the ratio is taken.
 | text on an attention fill | 4.5:1 | 7.29 | 7.29 | **7.29** |
 | focus ring on a panel | 3:1 | 7.29 | 12.12 | **10.12** |
 | focus ring on the ground | 3:1 | 6.40 | 13.14 | **6.65** |
+| focus ring **on the rail** | 3:1 | 13.14 | 8.67 | **6.65** |
 | hairline rule on a panel *(informational)* | — | 1.40 | 1.71 | 1.52 |
 | strong rule on a panel *(informational)* | — | 2.17 | 2.86 | 2.51 |
 

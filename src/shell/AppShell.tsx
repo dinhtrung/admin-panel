@@ -205,7 +205,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             onClick={closeDrawer}
             aria-hidden="true"
           />
-          <div className="relative h-full w-[15rem] shadow-overlay" role="dialog" aria-modal="true" aria-label="Board navigation">
+          <div className="relative h-full w-[15rem] shadow-overlay" data-rail-surface role="dialog" aria-modal="true" aria-label="Board navigation">
             <RailBody onNavigate={closeDrawer} />
           </div>
         </div>

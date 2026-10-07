@@ -263,6 +263,12 @@ Rules that hold in every appearance:
   changes the board, not the vocabulary of state.
 - **Measured, not asserted.** Every text, control and focus pair is computed from the tokens as the
   browser resolves them, and recorded in [`docs/design/palette.md`](docs/design/palette.md).
+- **The ring belongs to the surface behind it.** A focus ring is drawn on whatever sits behind the
+  control, so the rail — a saturated surface — takes its own ring colour (`--focus-rail`) while panels
+  take `--focus`, and rail-surfaced regions re-point the token in one base-layer declaration rather
+  than per control. A ring the colour of its own background is not a ring: Dusk shipped exactly that
+  until the finish review caught it
+  ([`docs/design/finish-review.md`](docs/design/finish-review.md)).
 
 ## Icons and marks
 

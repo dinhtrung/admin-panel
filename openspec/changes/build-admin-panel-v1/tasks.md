@@ -3,10 +3,10 @@
 Implementation of the frozen baseline. No spec deltas — behaviour comes from `openspec/specs/**`;
 this file is the build plan and the audit trail, so every ticked task carries its evidence.
 
-Ledger state: **33 of 36 ticked**, and the three open ones are 6.4 (a fresh-context review
-commissioned for the shipped build), 8.1 (the whole-baseline scenario sweep) and 8.3 (the archive
-that waits on 8.1). The rest of the ledger was brought up to date in one pass at the end of the
-build, which is exactly the gap that let this file drift behind the code it describes.
+Ledger state: **34 of 36 ticked**. The two open ones are 8.1 (the whole-baseline scenario sweep) and
+8.3 (the archive that waits on 8.1). The rest of the ledger was brought up to date in one pass at the
+end of the build, which is exactly the gap that let this file drift behind the code it describes —
+and the 6.4 review the delay made possible then found six real defects in the shipped build.
 
 ## 0. Prerequisites and integrity
 
@@ -144,11 +144,20 @@ build, which is exactly the gap that let this file drift behind the code it desc
   were documented in `DESIGN.md`; exit 0. The two that remain are TanStack Router's own fallback
   error-component constants (`fontSize: 1rem`, `borderRadius: .25rem`), which the panel's styles
   override — dependency code, not panel code.
-- [ ] 6.4 Finish review of the built surface against the direction contract (fresh context), with
-  the verdict quoted and the substitution disclosed if it is not the shipped reviewer. STATUS: a
-  fresh-context reviewer has been commissioned for the shipped build; this line closes when its
-  verdict is quoted here. It is **not** ticked on the strength of the in-thread inspection the build
-  already had.
+- [x] 6.4 Finish review of the built surface against the direction contract (fresh context), with
+  the verdict quoted and the substitution disclosed if it is not the shipped reviewer. EVIDENCE:
+  commissioned a fresh-context reviewer with no history from the build, given the direction contract,
+  the design system, the palette record and the live deployment; it reviewed 12 surfaces at 1280px and
+  390px in all three appearances. Its verdict is quoted in
+  [`docs/design/finish-review.md`](docs/design/finish-review.md): the craft floor passed with **zero
+  violations** and the rail is the only saturated ground in all three appearances — but it found the
+  shipped build **not ready**, because Dusk painted an invisible focus ring on the entire rail
+  (`--focus` and `--board-rail` were both `#083A52`, i.e. 1.00:1), light's rail ring was 2.44:1, and
+  the Overview's recent-activity rows were not in fixed columns. All six findings are fixed and
+  re-measured: the rail ring is **13.14 / 8.67 / 6.65:1** across light / dark / dusk, the Overview
+  columns drift **0px**, Feature-flag rows are a uniform **51–52px**, that table now fits its container
+  at both 1280 and 1440, and the "This session" chip is one line. The findings the reviewer did not
+  cover are recorded in the same file rather than dropped.
 - [x] 6.5 `DESIGN.md` + `.impeccable/design.json` generated **from** the built code. EVIDENCE: both
   present; `DESIGN.md` carries the frontmatter colour/type tokens the detectors read and now also the
   appearances table; `design.json` carries `colorMeta` for every token including the five dusk

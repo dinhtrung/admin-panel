@@ -49,11 +49,13 @@ export function Badge({
   tone = "quiet",
   className,
   mono = false,
+  title,
 }: {
   children: ReactNode;
   tone?: "quiet" | "ink" | "tint";
   className?: string;
   mono?: boolean;
+  title?: string;
 }) {
   const tones = {
     quiet: "border border-rule text-ink-muted",
@@ -63,11 +65,12 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-chip px-1.5 py-0.5 text-[0.6875rem] font-semibold",
+        "inline-flex items-center whitespace-nowrap rounded-chip px-1.5 py-0.5 text-[0.6875rem] font-semibold",
         mono && "font-mono tracking-tight",
         tones[tone],
         className,
       )}
+      title={title}
     >
       {children}
     </span>

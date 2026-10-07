@@ -267,19 +267,24 @@ function RecentActivity({ events, sweepKey }: { events: AuditEvent[]; sweepKey: 
               <Link
                 to="/audit/$eventId"
                 params={{ eventId: event.id }}
-                className="sweep flex flex-wrap items-baseline gap-x-2 gap-y-0.5 px-3 py-2 hover:bg-hover"
+                className="sweep flex flex-wrap items-baseline gap-x-2 gap-y-0.5 px-3 py-2 hover:bg-hover sm:flex-nowrap"
                 style={{ ["--sweep-index" as string]: String(Math.min(index, 12)) }}
               >
-                <span className="min-w-0 truncate text-body font-semibold text-ink" title={event.actorName}>
+                <span
+                  className="min-w-0 truncate text-body font-semibold text-ink sm:w-[9.5rem] sm:shrink-0"
+                  title={event.actorName}
+                >
                   {event.actorName}
                 </span>
-                <span className="font-mono text-[0.6875rem] text-ink-muted">{event.action}</span>
+                <span className="font-mono text-[0.6875rem] text-ink-muted sm:w-[10.5rem] sm:shrink-0 sm:truncate" title={event.action}>
+                  {event.action}
+                </span>
                 <span className="min-w-0 flex-1 truncate text-body text-ink-muted" title={event.targetLabel}>
                   {event.targetLabel}
                 </span>
                 <time
                   dateTime={event.at}
-                  className="num ml-auto shrink-0 text-[0.6875rem] text-ink-muted"
+                  className="num ml-auto shrink-0 text-[0.6875rem] text-ink-muted sm:w-[5rem] sm:text-right"
                   title={dateTime(event.at)}
                 >
                   {relativeTime(event.at)}
