@@ -4,7 +4,12 @@ Every raster in `public/mock/` is synthetic and generated; it is not a real comp
 mark and must never be presented as one. Regenerate with `node scripts/generate-mock-assets.mjs`
 (`--only <slug>` for one, `--model` to change the model, `FFMPEG=<path>` if ffmpeg is not on PATH).
 The model returns 1024²; the committed file is downscaled to 128², which is 2× the largest size the
-interface draws — the recorded model and seed reproduce the original.
+interface draws — the recorded model and seed reproduce the original. Generation is followed by
+`python3 scripts/crop-mark-margins.py`, which trims the empty margin the model leaves around each
+mark (the prompt asks for generous margin, which at 22px in a table row left the glyph reading as a
+smudge). It finds the content bounding box, squares it with 10% breathing room and re-fits the mark to
+the frame, so the glyph fills ~84% of the box instead of ~25%; two marks that already filled their
+frame are left untouched.
 
 | File | Organization | Model | Seed | Committed | Generated | Prompt |
 |---|---|---|---|---|---|---|
