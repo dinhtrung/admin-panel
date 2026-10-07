@@ -23,6 +23,7 @@ import {
   LoadingRows,
   Menu,
   NotFoundState,
+  OrgMark,
   Panel,
   PanelHead,
   SelectInput,
@@ -315,6 +316,7 @@ function OrganizationDetail({ orgId }: { orgId: string }) {
     <>
       <PageHeader
         title={organization.name}
+        mark={<OrgMark slug={organization.slug} name={organization.name} size={28} />}
         count={`${number(memberCount)} ${memberCount === 1 ? "member" : "members"}`}
         crumbs={[
           { label: "Board", to: "/" },

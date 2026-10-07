@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { DataGrid, GridSearch } from "../components/grid/DataGrid";
 import type { GridColumn } from "../components/grid/DataGrid";
-import { Badge, Panel, StatusMagnet, Toolbar } from "../components/ui";
+import { Badge, OrgMark, Panel, StatusMagnet, Toolbar } from "../components/ui";
 import { RequirePermission } from "../components/RequirePermission";
 import { PageHeader } from "../shell/PageHeader";
 import { useScope } from "../shell/scope";
@@ -65,14 +65,17 @@ function OrganizationDirectory() {
       header: "Organization",
       sortable: true,
       cell: (row) => (
-        <Link
-          to="/organizations/$orgId"
-          params={{ orgId: row.id }}
-          onClick={(event) => event.stopPropagation()}
-          className="font-semibold text-ink"
-        >
-          {row.name}
-        </Link>
+        <span className="flex items-center gap-2">
+          <OrgMark slug={row.slug} name={row.name} />
+          <Link
+            to="/organizations/$orgId"
+            params={{ orgId: row.id }}
+            onClick={(event) => event.stopPropagation()}
+            className="font-semibold text-ink"
+          >
+            {row.name}
+          </Link>
+        </span>
       ),
     },
     {

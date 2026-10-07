@@ -5,6 +5,7 @@
  *  accessible name always carry the word. */
 
 import type { ReactNode } from "react";
+import { IconCaretDownFilled, IconCaretUpFilled, IconMinus } from "@tabler/icons-react";
 import { cn } from "../../lib/cn";
 
 const STATUS: Record<string, { code: string; word: string; className: string }> = {
@@ -78,15 +79,13 @@ export function Delta({ value, label }: { value: number; label: string }) {
   const tone = value === 0 ? "text-ink-muted" : "text-ink";
   return (
     <span className={cn("inline-flex items-center gap-1 text-[0.6875rem]", tone)}>
-      <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true" className="shrink-0">
-        {value === 0 ? (
-          <path d="M1.5 5h7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        ) : value > 0 ? (
-          <path d="M5 1.5 8.5 7H1.5z" fill="currentColor" />
-        ) : (
-          <path d="M5 8.5 1.5 3h7z" fill="currentColor" />
-        )}
-      </svg>
+      {value === 0 ? (
+        <IconMinus size={10} className="shrink-0" aria-hidden="true" />
+      ) : value > 0 ? (
+        <IconCaretUpFilled size={10} className="shrink-0" aria-hidden="true" />
+      ) : (
+        <IconCaretDownFilled size={10} className="shrink-0" aria-hidden="true" />
+      )}
       <span className="num">
         {value > 0 ? "+" : value < 0 ? "−" : ""}
         {Math.abs(value)}

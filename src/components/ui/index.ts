@@ -9,3 +9,4 @@ export { Menu } from "./Menu";
 export type { MenuItem } from "./Menu";
 export { ToastProvider, useToast } from "./Toast";
 export { LoadingRows, EmptyState, NoMatchesState, ErrorState, DeniedState, NotFoundState } from "./States";
+export { OrgMark } from "./OrgMark";

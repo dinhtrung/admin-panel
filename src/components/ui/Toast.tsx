@@ -3,6 +3,7 @@
 
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import type { ReactNode } from "react";
+import { IconAlertTriangle, IconCheck, IconX } from "@tabler/icons-react";
 import { cn } from "../../lib/cn";
 
 type Tone = "done" | "problem";
@@ -60,21 +61,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           >
             <span className="mt-0.5 shrink-0" aria-hidden="true">
               {toast.tone === "problem" ? (
-                <svg width="12" height="12" viewBox="0 0 12 12">
-                  <path d="M6 1.5 11 10.5H1z" fill="none" stroke="var(--attention)" strokeWidth="1.4" strokeLinejoin="round" />
-                  <path d="M6 5v2.4" stroke="var(--attention)" strokeWidth="1.4" strokeLinecap="round" />
-                </svg>
+                <IconAlertTriangle size={12} className="text-attention" />
               ) : (
-                <svg width="12" height="12" viewBox="0 0 12 12">
-                  <path
-                    d="M1.5 6.4 4.2 9 10.5 3"
-                    fill="none"
-                    stroke="var(--ink)"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <IconCheck size={12} className="text-ink" />
               )}
             </span>
             <div className="min-w-0">
@@ -87,9 +76,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               className="relative ml-auto shrink-0 text-ink-muted hover:text-ink after:absolute after:-inset-3 after:content-['']"
               aria-label="Dismiss"
             >
-              <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
-                <path d="M1.5 1.5 8.5 8.5M8.5 1.5 1.5 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
+              <IconX size={10} />
             </button>
           </div>
         ))}

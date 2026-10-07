@@ -4,6 +4,7 @@
 import { forwardRef, useId } from "react";
 import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
 import { ChevronDown } from "lucide-react";
+import { IconCheck } from "@tabler/icons-react";
 import { cn } from "../../lib/cn";
 
 const CONTROL =
@@ -162,24 +163,27 @@ export function Checkbox({
   const boxId = id ?? generated;
   return (
     <div className="flex items-start gap-2">
-      <input
-        id={boxId}
-        type="checkbox"
-        checked={checked}
-        disabled={disabled}
-        onChange={(e) => onChange(e.target.checked)}
-        className={cn(
-          "mt-0.5 size-4 shrink-0 appearance-none rounded-[2px] border border-rule-strong bg-panel",
-          "checked:border-plum checked:bg-plum",
-          "checked:bg-[length:11px_11px] checked:bg-center checked:bg-no-repeat",
-          "disabled:cursor-not-allowed disabled:opacity-50",
-        )}
-        style={{
-          backgroundImage: checked
-            ? "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 6.2 4.7 8.4 9.5 3.6' fill='none' stroke='%23F0F0F0' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")"
-            : undefined,
-        }}
-      />
+      <span className="relative mt-0.5 inline-flex size-4 shrink-0">
+        <input
+          id={boxId}
+          type="checkbox"
+          checked={checked}
+          disabled={disabled}
+          onChange={(e) => onChange(e.target.checked)}
+          className={cn(
+            "peer size-4 appearance-none rounded-[2px] border border-rule-strong bg-panel",
+            "checked:border-plum checked:bg-plum",
+            "disabled:cursor-not-allowed disabled:opacity-50",
+          )}
+        />
+        {/* A real glyph at the library's own weight, rather than a hand-written path in a data URI. */}
+        <IconCheck
+          size={11}
+          stroke={2.5}
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 m-auto text-on-plum opacity-0 peer-checked:opacity-100"
+        />
+      </span>
       <label htmlFor={boxId} className="text-body leading-snug">
         {label}
         {hint ? <span className="block text-[0.6875rem] text-ink-muted">{hint}</span> : null}

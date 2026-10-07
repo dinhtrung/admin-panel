@@ -230,6 +230,27 @@ tinted band; a state change moves a token rather than animating a surface.
 **The Ruled-Not-Shadowed Rule.** If two regions need separating, draw a line. Reach for the overlay
 shadow only when the region floats above the board and can be dismissed.
 
+## Icons and marks
+
+Two icon libraries, on purpose, with a rule that keeps them from blending into mush:
+
+- **lucide-react is the primary family.** Nearly everything uses it — chevrons, search, destructive
+  actions in menus, page actions. Its 24px grid and 2px stroke are the reference.
+- **@tabler/icons-react covers the gaps**, and only where a glyph would otherwise have to be
+  hand-authored. It was added to replace hand-written SVG paths (the toast tick, warning and dismiss
+  marks; the delta carets; the checkbox tick), not to be a second opinion on the same glyphs. Same
+  24px grid, so the two sit together without a visible seam.
+- **One family per control.** Never two vendors inside a single control or a single row of glyphs —
+  that is the failure mode that makes an icon set look assembled rather than designed.
+- An icon is never the only carrier of meaning: every status has its word, every icon-only button has
+  an accessible name, and the state magnets carry a three-letter code so state survives greyscale.
+
+**Marks.** The organization marks in `public/mock/` are synthetic rasters generated with fal.ai —
+never a real company's logo, and attributed with model, seed and full prompt in
+`docs/design/mock-assets.md`. They are drawn at 22–28px from a 128px source, sit inside a 2px chip
+radius with a hairline rule like every other object on the board, and degrade to a monogram if the
+raster is missing: a mark that fails to load must not leave a hole in a row.
+
 ## Shapes
 
 Square to nearly square: the only rounding in the system is a **2px chip radius**, applied to buttons,
