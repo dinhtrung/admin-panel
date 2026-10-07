@@ -107,5 +107,6 @@ be green in one run at the end.
 
 - [x] 8.1 Archive the change, confirm strict validation of the merged baseline, and push. EVIDENCE:
   archived as `2026-10-07-add-theme-registry` with the three requirements merged into
-  `openspec/specs/theme-system/`; `openspec validate --all --strict` reports 19 items, 0 failed; pushed
-  and verified by read-back against `git ls-remote`.
+  `openspec/specs/theme-system/`; `openspec validate --all --strict` reports **18 items, 0 failed**
+  (the 17 capability specs plus the one in-flight build change) with `theme-system` now carrying 8
+  requirements and 17 scenarios; pushed and verified by read-back against `git ls-remote`.
