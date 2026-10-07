@@ -1,0 +1,5 @@
+schema: spec-driven
+created: 2026-10-07
+goal: Make the light appearance's tokens resolve inside a nested scope, so the switcher's Light row previews Light's own colours instead of the active appearance's.
+skip_specs: true
+
