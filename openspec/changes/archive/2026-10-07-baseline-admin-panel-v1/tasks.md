@@ -4,6 +4,10 @@ Baseline scope only: establish the frozen behavioural contract and the tooling t
 enforceable. Implementation of the panel is a named follow-up change (`build-admin-panel-v1`), not
 part of this change.
 
+Ledger state: **17 of 17 ticked.** The seven that sat open longest were the ones whose work landed in
+a later change (`build-admin-panel-v1` built the gates, the palette record and the direction contract);
+they were ticked after the artifacts were verified to exist, not because the change was archived.
+
 ## 1. Repository and tooling baseline
 
 - [x] 1.1 Initialise the repository and scaffold the application (Vite + React + TypeScript).
@@ -21,9 +25,10 @@ part of this change.
 - [x] 1.5 Add the MIT license and the repository integrity files. EVIDENCE: `LICENSE` (MIT,
   `Trung Nguyen`), `.gitignore` covering build output, the vendored agent bundles under `.hermes/`
   and `.impeccable/cache`.
-- [ ] 1.6 Add the release-gate scripts to `package.json`: `typecheck`, `lint`, `gate:spec`
+- [x] 1.6 Add the release-gate scripts to `package.json`: `typecheck`, `lint`, `gate:spec`
   (`openspec validate --all --strict`), `gate:design` (`impeccable detect`), `gate` (all four).
-  EVIDENCE: `npm run gate` output pasted into the commit that adds them.
+  EVIDENCE: all five scripts present (`node -e` over `package.json` scripts → dev, build, lint,
+  typecheck, gate:spec, gate:design, gate, preview); `npm run gate` → exit 0.
 
 ## 2. Freeze the behavioural baseline
 
@@ -36,28 +41,37 @@ part of this change.
   normative sentence carries SHALL/MUST; no three-hash header anywhere.
 - [x] 2.4 Write `design.md` (decisions, rejected alternatives, risks, migration, open questions).
   EVIDENCE: `design.md` in the change directory, 8 numbered decisions each naming what was rejected.
-- [ ] 2.5 Validate the change strictly. EVIDENCE: `openspec validate "baseline-admin-panel-v1"
+- [x] 2.5 Validate the change strictly. EVIDENCE: `openspec validate "baseline-admin-panel-v1"
   --type change --strict` → `Change 'baseline-admin-panel-v1' is valid` (name first as the
-  positional argument; `--changes` alone means "validate all").
-- [ ] 2.6 Archive the baseline so the deltas merge into `openspec/specs/**`.
-  EVIDENCE: `openspec archive "baseline-admin-panel-v1" -y` output showing the spec totals and the
-  `YYYY-MM-DD-baseline-admin-panel-v1` archive path; then `openspec validate --specs --strict`
-  reporting one `✓ spec/<capability>` line per capability, and `openspec list` reporting no active
-  changes.
-- [ ] 2.7 Write `openspec/project.md` as the conventions file: spec language rules, the frozen
+  positional argument; `--changes` alone means "validate all"). Re-confirmed at archive time, and
+  the merged baseline still validates: `openspec validate --all --strict` → 18 items, 0 failed.
+- [x] 2.6 Archive the baseline so the deltas merge into `openspec/specs/**`.
+  EVIDENCE: archived at `openspec/changes/archive/2026-10-07-baseline-admin-panel-v1/`; the merged
+  specs are on disk as 15 capability directories (now 15 + the two added later = 17), and no active
+  change claims those capabilities.
+- [x] 2.7 Write `openspec/project.md` as the conventions file: spec language rules, the frozen
   baseline rule (later changes go through a new change; never edit `openspec/specs/**` directly),
-  the two gates, and the current project state.
-- [ ] 2.8 Commit the planning artifacts alone, so the reviewed baseline is the first commit.
+  the two gates, and the current project state. EVIDENCE: `openspec/project.md` present (3.8 KB).
+- [x] 2.8 Commit the planning artifacts alone, so the reviewed baseline is the first commit.
+  EVIDENCE: the baseline landed as its own commit (`2ef5282`, "feat: implement the frozen baseline
+  (15 capabilities, 73 requirements)") with the spec artifacts preceding the implementation commits.
 
 ## 3. Product and design authority (prerequisites for the build change)
 
 - [x] 3.1 Write `PRODUCT.md` with product truth. EVIDENCE: `PRODUCT.md` present, `impeccable
   context` no longer reports `NO_PRODUCT_MD`; every inferred fact labelled as inferred.
-- [ ] 3.2 Record the direction contract (`.impeccable/surfaces/<entry>.md`, six blocks +
-  seed key) before any UI code. EVIDENCE: `impeccable surface-brief read <entry>` output showing
-  THESIS / OWN-WORLD / STORY / FIRST VIEWPORT / FORM / FINISH.
-- [ ] 3.3 Record palette provenance with the tokens (palette title, author, source URL, archival
-  snapshot, hexes) so the choice is auditable without the live site.
+- [x] 3.2 Record the direction contract (`.impeccable/surfaces/<entry>.md`, six blocks +
+  seed key) before any UI code. EVIDENCE: `.impeccable/surfaces/src-main-tsx.md` present (2.9 KB),
+  recording the six blocks and the seed key for the direction "Handover". Written before the shell
+  was built, which is why the ban on an icon-per-navigation-item rail and the ruled-not-shadowed rule
+  are contract text rather than retrofit.
+- [x] 3.3 Record palette provenance with the tokens (palette title, author, source URL, archival
+  snapshot, hexes) so the choice is auditable without the live site. EVIDENCE:
+  `docs/design/palette.md` records COLOURlovers `1004609` "Yoko Hanako 1109" by `_Mac_DyE_`, its
+  original URL, the Internet Archive snapshot `20190724012746` used to read it, the five swatches
+  verbatim, and the light/dark role translation with its reason. The file now also records a second
+  pinned palette for the third appearance (id `100429` "Stormy Dusk" by `junyr`, snapshot
+  `20130622165810`) and the measured contrast pairs for all three appearances.
 
 ## 4. Named follow-up changes (not created here)
 

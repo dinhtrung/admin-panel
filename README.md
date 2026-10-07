@@ -7,7 +7,7 @@ running end to end on synthetic data, with no server, no account and no setup.
 
 It exists to demonstrate one claim: **the behaviour is specified before it is built, and the design is
 measured after it is built.** Two machine-checked gates sit on this repository — a frozen OpenSpec
-baseline (**17 capabilities, 82 requirements, 202 scenarios**) and a deterministic design detector.
+baseline (**17 capabilities, 85 requirements, 209 scenarios**) and a deterministic design detector.
 A UI kit gives you screens; this gives you the contract, the screens that satisfy it, and the evidence
 for both.
 
@@ -87,7 +87,7 @@ npm run gate
 ```
 
 Measured on the current commit: `openspec validate --all --strict` → **18 items, 0 failed** (the 17
-capability specs plus the one in-flight change; the specs alone carry 82 requirements and 202
+capability specs plus the one in-flight change; the specs alone carry 85 requirements and 209
 scenarios across 17 capabilities). `impeccable detect` → exit 0, with **2 advisories**, both of which
 are TanStack Router's built-in fallback error component shipping its own inline constants
 (`fontSize: 1rem`, `borderRadius: .25rem`) — code the panel overrides with its own `errorComponent`

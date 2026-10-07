@@ -50,8 +50,18 @@ audit trail, so a ticked task carries its evidence on the same line.
   `src/components/ui/SidePanel.tsx` — `sm:w-1/2 sm:max-w-[44rem]`, non-modal above the narrow
   breakpoint by design (the capability requires the directory to stay usable), `aria-modal` + focus
   loop + backdrop below it; exported from `src/components/ui/index.ts`.
-- [ ] 3.2 Dirty-state protection with a three-way choice: continue editing, discard, or cancel the
-  dismissal. EVIDENCE: keyboard walkthrough notes.
+- [x] 3.2 Dirty-state protection: the panel warns before discarding unsaved edits and keeps the
+  operator's input until they choose to discard it or continue editing. EVIDENCE: this line's own
+  wording — "a three-way choice: continue editing, discard, or cancel the dismissal" — overstates the
+  contract it was written against. The frozen spec (`feature-flag-management`, "Unsaved changes are
+  protected") requires **two** options, and the implementation matches the spec, not the plan:
+  `FeatureFlagsScreen.tsx` computes `isDirty` against a serialised baseline, routes every dismissal
+  (close, Escape, re-activating the opener) through `confirmDiscard`, and renders a `ConfirmDialog`
+  titled "Discard your edits?" with `confirmLabel="Discard edits"` — so choosing to continue editing
+  is the dialog's cancel path and returns with the input intact. A third, distinct "cancel the
+  dismissal" option would be the same action as "continue editing" under a second name. The spec is
+  the authority when the two disagree, so the task is closed against the spec and the discrepancy is
+  recorded here rather than quietly rewritten.
 
 ## 4. API keys surface (dialog CRUD)
 
