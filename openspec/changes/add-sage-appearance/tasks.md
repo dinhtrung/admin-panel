@@ -89,10 +89,11 @@ gates must be green in one run at the end.
   `#ADB08B` (7.10:1 on the rail) — reproducing the Sage column in `docs/design/palette.md`. The rail's
   other controls draw their ring in the rail's own ink (7.68:1 on the violet rail), which is the
   pre-existing pattern: under Ember the same pair measures 4.26:1.
-- [ ] 5.5 Out of scope, recorded so it is not lost: the **Light row of the switcher previews the active
-  appearance's colours** rather than its own whenever a non-light appearance is active. Reproduced on the
-  deployed build **before this change** (with Ember active, both the System and Light rows preview
-  `#ECD5C3`, Ember's ground, instead of Light's `#F0F0F0`), because the light appearance is defined on
-  `:root` and a nested `data-theme="light"` scope therefore inherits whatever is active. The Sage row
-  previews correctly. Fixing it changes the theme-system's preview behaviour, so it needs its own change
-  or an explicit scope extension — this change does not touch it.
+- [x] 5.5 Fixed by the follow-up change `fix-light-appearance-preview` (its tasks 2.1–2.3): the **Light
+  row of the switcher previewed the active appearance's colours** rather than its own whenever a
+  non-light appearance was active — reproduced on the deployed build **before this change** (with Ember
+  active, both the System and Light rows previewed `#ECD5C3`, Ember's ground, instead of Light's
+  `#F0F0F0`), because the light appearance is defined on `:root` and a nested `data-theme="light"` scope
+  therefore inherited whatever was active. The Sage row always previewed correctly. The follow-up selects
+  the light block with `:root, [data-theme="light"]`, after which the six rows preview `#F0F0F0`,
+  `#F0F0F0`, `#181818`, `#ABC5C9`, `#ECD5C3`, `#E6E7DC`.
