@@ -3,10 +3,10 @@
 Implementation of the frozen baseline. No spec deltas — behaviour comes from `openspec/specs/**`;
 this file is the build plan and the audit trail, so every ticked task carries its evidence.
 
-Ledger state: **34 of 36 ticked**, and the two open ones are both in §8 — the whole-baseline scenario
-sweep (8.1) and the archive that waits on it (8.3). One item, 6.4, was ticked only after a
-fresh-context review was actually commissioned; the rest of the ledger was brought up to date in one
-pass at the end of the build, which is exactly the gap that let this file drift behind the code.
+Ledger state: **33 of 36 ticked**, and the three open ones are 6.4 (a fresh-context review
+commissioned for the shipped build), 8.1 (the whole-baseline scenario sweep) and 8.3 (the archive
+that waits on 8.1). The rest of the ledger was brought up to date in one pass at the end of the
+build, which is exactly the gap that let this file drift behind the code it describes.
 
 ## 0. Prerequisites and integrity
 
