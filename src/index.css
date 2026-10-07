@@ -20,12 +20,18 @@
   (#181818 #F0F0F0 #D5DEF0 #903078 #483048). Provenance: docs/design/palette.md
   Derived values are tints of the palette only; no sixth hue is introduced.
 
-  This file is the whole registry's token side: `:root` is the light appearance, and each
+  This file is the whole registry's token side: the light appearance is the block below, and each
   `[data-theme="…"]` block remaps the same semantic roles for one more appearance. Adding an
   appearance is a block here plus an entry in src/lib/appearance.ts — no component changes.
   The role names are the contract: every appearance must define every role below.
+
+  The light block is selected by `:root, [data-theme="light"]` on purpose. The switcher previews an
+  appearance by rendering a subtree that carries its `data-theme`, so with `:root` alone a nested
+  `data-theme="light"` scope had nothing of its own to resolve and inherited whichever appearance was
+  applied — the Light row previewed the active appearance's colours. Keep the second selector.
 */
-:root {
+:root,
+[data-theme="light"] {
   color-scheme: light;
 
   /* Display density: the two values the interface actually reflows by. Comfortable is the default;
