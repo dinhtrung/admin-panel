@@ -184,6 +184,55 @@
   --overlay-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.45);
 }
 
+/* The fifth appearance, seeded by a fourth pinned palette: COLOURlovers 1077213 "Limelicious" by
+   gracefulNothing (#535735 #ADB08B #729478 #EB4123 #31114D) — provenance and measured pairs in
+   docs/design/palette.md. The first tinted-paper appearance: the other four answer a cool daylight, the
+   dark, a dim cool room and a warm light, and every one of their grounds is a near-neutral white, a
+   mist or a tan — none is the tinted stock a printed form is drawn on. Composed, not inverted: the pale
+   surfaces are mixed from the palette's sage, ink is its violet, and the rail is that violet, which is
+   the one region that owns a saturated ground. The palette's red-orange #EB4123 is deliberately unused:
+   at any structural size it competes with the attention fill, which must stay the one thing that
+   shouts. */
+[data-theme="sage"] {
+  color-scheme: light;
+
+  --palette-sage-olive: #535735;
+  --palette-sage: #adb08b;
+  --palette-sage-leaf: #729478;
+  --palette-sage-violet: #31114d;
+
+  --sage-ground: color-mix(in srgb, var(--palette-sage) 30%, #ffffff);
+  --sage-panel: color-mix(in srgb, var(--palette-sage) 12%, #ffffff);
+
+  --board-ground: var(--sage-ground);
+  --board-panel: var(--sage-panel);
+  --board-rail: var(--palette-sage-violet);
+  --board-rail-ink: var(--sage-ground);
+  --board-hover: color-mix(in srgb, var(--palette-sage-violet) 10%, transparent);
+  --board-selected: color-mix(in srgb, var(--palette-sage-violet) 24%, var(--sage-ground));
+
+  --ink: var(--palette-sage-violet);
+  /* The palette's nearest neutral is an olive, not a grey, so secondary text is mixed between two of
+     its own swatches rather than borrowed from another palette. */
+  --ink-muted: color-mix(in srgb, var(--palette-sage-olive) 70%, var(--palette-sage-violet));
+
+  --rule: color-mix(in srgb, var(--palette-sage-violet) 24%, transparent);
+  --rule-strong: color-mix(in srgb, var(--palette-sage-violet) 48%, transparent);
+
+  --attention: var(--palette-attention);
+  --on-attention: #ffffff;
+  --plum: var(--palette-plum);
+  --on-plum: var(--palette-ground);
+  /* The ring changes carrier between the board and the rail, as it already does in the dark, dusk and
+     warm appearances. The palette's violet carries neither: on the panel it would be a second reading
+     of the ink, and on the rail it would be the rail's own colour — 1.00:1, no ring at all. The olive
+     carries it on the board and the sage on the rail. */
+  --focus: var(--palette-sage-olive);
+  --focus-rail: var(--palette-sage);
+
+  --overlay-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.45);
+}
+
 /* The compact step, chosen in Settings and applied before the first paint by the inline script. */
 [data-density="compact"] {
   --density-row-pad-y: 0.25rem;
