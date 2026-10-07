@@ -11,8 +11,28 @@ baseline (**17 capabilities, 82 requirements, 202 scenarios**) and a determinist
 A UI kit gives you screens; this gives you the contract, the screens that satisfy it, and the evidence
 for both.
 
-![The board at 1440](docs/screenshots/desktop.png)
+![The user directory at 1440](docs/screenshots/desktop.png)
+*The user directory — the dense reading surface: fixed columns, magnets in a dedicated slot, tabular numerals.*
+
+![The organizations directory](docs/screenshots/organizations.png)
+*Organizations, carrying the eight generated marks. These are the only images in the panel.*
+
+![API keys: all CRUD in a modal dialog](docs/screenshots/dialog.png)
+*API keys do every operation in one modal dialog. The secret is shown once, here, and never stored.*
+
+![Feature flags: CRUD in a non-modal side panel](docs/screenshots/panel.png)
+*Feature flags edit in a panel that takes half the width and is deliberately non-modal — the directory stays usable beside it.*
+
 ![The board at 390](docs/screenshots/mobile.png)
+
+**Where the images and icons are, since their absence is deliberate.** There are no decorative icons:
+the navigation rail is text and rules by design (an icon-per-nav-item rail is called out and refused in
+`DESIGN.md`), and status is a text magnet carrying a three-letter code rather than a coloured glyph.
+Icons appear only where they carry meaning — the board-controls trigger, breadcrumb chevrons, sort
+carets, pagination, row-action menus, toast marks, delta carets, checkbox ticks. Images appear in one
+place: the eight organization marks on the Organizations directory and detail, generated with fal.ai
+and attributed with model, seed and prompt in [`docs/design/mock-assets.md`](docs/design/mock-assets.md).
+Every other entity is drawn from type — a user is a checkbox, a name and a magnet, not an avatar.
 
 ## What you can actually do
 
