@@ -96,27 +96,52 @@ Two decisions worth stating rather than hiding:
   3:1 ring threshold on the mist ground, so focus is carried by the deep swatch (10.12:1 on a panel),
   exactly as the dark appearance hands focus to the tint rather than to the attention colour.
 
+## Third seed palette — the fourth appearance ("Ember")
+
+| Field | Value |
+|---|---|
+| Site | COLOURlovers |
+| Palette | **Clay** |
+| Palette id | 1001576 |
+| Author | `eponine` |
+| Original URL | https://www.colourlovers.com/palette/1001576/Clay |
+| Retrieved from | Internet Archive snapshot `20100326071244` — https://web.archive.org/web/20100326071244id_/http://www.colourlovers.com/palette/1001576/Clay |
+
+### The palette, verbatim, and the roles it took
+
+| Swatch | Role in the fourth appearance |
+|---|---|
+| `#BF7436` | tan — mixed toward paper for the ground (`#ECD5C3`) and for the panels (`#F7EEE7`) |
+| `#8C5223` | brown — mixed with the dark swatch for secondary text (`4.92:1` on the ground) |
+| `#703E14` | dark brown — primary text, the rules, **and** the rail, which is the one region owning a saturated ground |
+| `#AD5207` | burnt orange — the selected-row band and the focus ring on the panels |
+| `#F77D19` | **not used.** At any structural size this chroma competes with the attention fill, which has to remain the one thing that shouts; recorded here so the exclusion is a decision rather than an omission |
+
+The warm appearance exists for the case the other three do not cover: a warm light. Light is a cool
+daylight, Dusk a dim cool room, Dark the dark — none of them is a room lit by something warm, and the
+rail spends its single saturated region on the warm brown rather than on ink, plum or teal.
+
 ## Measured contrast, every appearance
 
 Computed from the tokens as the browser resolves them (custom properties are not resolved by
 `getComputedStyle`, so each value is painted onto a probe element and read back), with alpha
 composited before the ratio is taken.
 
-| Pair | Minimum | Light | Dark | Dusk |
-|---|---|---|---|---|
-| body text on the ground | 4.5:1 | 15.58 | 15.58 | **6.38** |
-| body text on a panel | 4.5:1 | 17.76 | 14.38 | **9.71** |
-| muted text on the ground | 4.5:1 | 10.28 | 13.14 | **4.82** |
-| muted text on a panel | 4.5:1 | 11.72 | 12.12 | **7.33** |
-| body text on a selected row | 4.5:1 | 13.14 | 8.10 | **4.69** |
-| rail label on the rail | 4.5:1 | 15.58 | 10.28 | **6.65** |
-| text on a plum fill | 4.5:1 | 10.28 | 10.28 | **10.28** |
-| text on an attention fill | 4.5:1 | 7.29 | 7.29 | **7.29** |
-| focus ring on a panel | 3:1 | 7.29 | 12.12 | **10.12** |
-| focus ring on the ground | 3:1 | 6.40 | 13.14 | **6.65** |
-| focus ring **on the rail** | 3:1 | 13.14 | 8.67 | **6.65** |
-| hairline rule on a panel *(informational)* | — | 1.40 | 1.71 | 1.52 |
-| strong rule on a panel *(informational)* | — | 2.17 | 2.86 | 2.51 |
+| Pair | Minimum | Light | Dark | Dusk | Ember |
+|---|---|---|---|---|---|
+| body text on the ground | 4.5:1 | 15.58 | 15.58 | 6.38 | **6.24** |
+| body text on a panel | 4.5:1 | 17.76 | 14.38 | 9.71 | **7.70** |
+| muted text on the ground | 4.5:1 | 10.28 | 13.14 | 4.82 | **4.92** |
+| muted text on a panel | 4.5:1 | 11.72 | 12.12 | 7.33 | **6.07** |
+| body text on a selected row | 4.5:1 | 13.14 | 8.10 | 4.69 | **4.68** |
+| rail label on the rail | 4.5:1 | 15.58 | 10.28 | 6.65 | **6.24** |
+| text on a plum fill | 4.5:1 | 10.28 | 10.28 | 10.28 | **10.28** |
+| text on an attention fill | 4.5:1 | 7.29 | 7.29 | 7.29 | **7.29** |
+| focus ring on a panel | 3:1 | 7.29 | 12.12 | 10.12 | **4.61** |
+| focus ring on the ground | 3:1 | 6.40 | 13.14 | 6.65 | **3.74** |
+| focus ring **on the rail** | 3:1 | 13.14 | 8.67 | 6.65 | **6.24** |
+| hairline rule on a panel *(informational)* | — | 1.40 | 1.71 | 1.52 | 1.48 |
+| strong rule on a panel *(informational)* | — | 2.17 | 2.86 | 2.51 | 2.32 |
 
 Every appearance passes every minimum; the light column reproduces the 6.40:1 the first palette's
 record already claimed, which is what makes these numbers comparable rather than new. Rules are listed

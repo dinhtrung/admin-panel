@@ -81,6 +81,30 @@
         "displayName": "Dusk Ink (charcoal)",
         "canonical": "#1A3E42",
         "tonalRamp": ["#0C1D20", "#1A3E42", "#2C5559", "#457276", "#6E979B", "#9EBDC0", "#CBDCDD", "#EDF3F4"]
+      },
+      "clay-orange": {
+        "role": "accent",
+        "displayName": "Ember Selection (burnt orange)",
+        "canonical": "#AD5207",
+        "tonalRamp": ["#3A1C02", "#703E14", "#8C5223", "#AD5207", "#D07B2E", "#E3A15F", "#F0C79A", "#FAE6D2"]
+      },
+      "clay-tan": {
+        "role": "neutral",
+        "displayName": "Ember Surface (tan)",
+        "canonical": "#BF7436",
+        "tonalRamp": ["#5C3616", "#8C5223", "#A66329", "#BF7436", "#D4956A", "#E4B894", "#F1DAC4", "#FBF2E7"]
+      },
+      "clay-brown": {
+        "role": "neutral",
+        "displayName": "Ember Secondary Text (brown)",
+        "canonical": "#8C5223",
+        "tonalRamp": ["#3A1C02", "#5C3616", "#703E14", "#8C5223", "#B07846", "#CCA176", "#E3C7AB", "#F6E9DA"]
+      },
+      "clay-dark": {
+        "role": "neutral",
+        "displayName": "Ember Ink and Rail (dark brown)",
+        "canonical": "#703E14",
+        "tonalRamp": ["#2A1503", "#3A1C02", "#54290A", "#703E14", "#96601F", "#B98A4A", "#D9BC94", "#F2E4D2"]
       }
     },
     "typographyMeta": {

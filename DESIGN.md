@@ -24,6 +24,12 @@ colors:
   dusk-slate: "#4A4B4B"
   dusk-deep: "#083A52"
   dusk-charcoal: "#1A3E42"
+  # The fourth appearance's seed palette (COLOURlovers 1001576 "Clay" by eponine). The palette's fifth
+  # swatch, #F77D19, is deliberately not used and so is not a token: see docs/design/palette.md.
+  clay-orange: "#AD5207"
+  clay-tan: "#BF7436"
+  clay-brown: "#8C5223"
+  clay-dark: "#703E14"
 typography:
   display:
     fontFamily: "Archivo Variable, ui-sans-serif, system-ui, sans-serif"
@@ -252,6 +258,13 @@ Three ship today:
 | **Light** | "Yoko Hanako 1109", COLOURlovers 1004609 | `#F0F0F0` | ink `#181818` | the workstation in daylight |
 | **Dark** | the same palette, roles remapped | `#181818` | plum `#483048` | a dark room, a screen at night |
 | **Dusk** | "Stormy Dusk", COLOURlovers 100429 | mist `#ABC5C9` | deep `#083A52` | dim light: less glare than Light, still a printed board rather than a black screen |
+| **Ember** | "Clay", COLOURlovers 1001576 | clay `#ECD5C3` | dark brown `#703E14` | a warm light — the one scene the other three do not cover |
+
+The control that presents them is a **switcher**, not a row of segments: a row is sized for a fixed
+number of appearances and quietly stops working as the registry grows, which is the opposite of what a
+registry is for. Each row in the switcher previews its own appearance — the swatch carries that
+appearance's `data-theme`, so it is the appearance's real tokens resolved in a subtree rather than a
+copy of its colours kept somewhere else, and a preview cannot drift from what choosing it does.
 
 Rules that hold in every appearance:
 

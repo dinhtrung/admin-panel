@@ -139,6 +139,51 @@
   --overlay-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.45);
 }
 
+/* The fourth appearance, seeded by a third pinned palette: COLOURlovers 1001576 "Clay" by eponine
+   (#AD5207 #F77D19 #BF7436 #8C5223 #703E14) — provenance and measured pairs in docs/design/palette.md.
+   A warm light for a warm-lit room: the cool daylight, the dim cool room and the dark already have
+   appearances of their own. Composed, not inverted — pale surfaces mixed from the palette's tan, ink
+   from its dark brown, and the rail in that dark brown, which is the one region that owns a saturated
+   ground. The palette's vivid #F77D19 is deliberately unused: at any structural size a chroma that
+   high competes with the attention fill, which must stay the one thing that shouts. */
+[data-theme="ember"] {
+  color-scheme: light;
+
+  --palette-clay-orange: #ad5207;
+  --palette-clay-tan: #bf7436;
+  --palette-clay-brown: #8c5223;
+  --palette-clay-dark: #703e14;
+
+  --ember-ground: color-mix(in srgb, var(--palette-clay-tan) 30%, #ffffff);
+  --ember-panel: color-mix(in srgb, var(--palette-clay-tan) 12%, #ffffff);
+
+  --board-ground: var(--ember-ground);
+  --board-panel: var(--ember-panel);
+  --board-rail: var(--palette-clay-dark);
+  --board-rail-ink: var(--ember-ground);
+  --board-hover: color-mix(in srgb, var(--palette-clay-dark) 10%, transparent);
+  --board-selected: color-mix(in srgb, var(--palette-clay-orange) 24%, var(--ember-ground));
+
+  --ink: var(--palette-clay-dark);
+  /* The palette has no mid neutral, so secondary text is mixed between two of its own swatches rather
+     than borrowed from another palette. */
+  --ink-muted: color-mix(in srgb, var(--palette-clay-brown) 70%, var(--palette-clay-dark));
+
+  --rule: color-mix(in srgb, var(--palette-clay-dark) 24%, transparent);
+  --rule-strong: color-mix(in srgb, var(--palette-clay-dark) 48%, transparent);
+
+  --attention: var(--palette-attention);
+  --on-attention: #ffffff;
+  --plum: var(--palette-plum);
+  --on-plum: var(--palette-ground);
+  --focus: var(--palette-clay-orange);
+  /* The rail's own pale surface carries the ring there — a ring measured against the panels would sit
+     on the rail at close to its own value. */
+  --focus-rail: var(--ember-ground);
+
+  --overlay-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.45);
+}
+
 /* The compact step, chosen in Settings and applied before the first paint by the inline script. */
 [data-density="compact"] {
   --density-row-pad-y: 0.25rem;

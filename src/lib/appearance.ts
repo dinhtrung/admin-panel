@@ -7,7 +7,7 @@
  *  so; keep the two in step.
  */
 
-export type AppearanceId = "light" | "dark" | "dusk";
+export type AppearanceId = "light" | "dark" | "dusk" | "ember";
 
 /** What the operator can choose: an appearance, or the machine's preference. */
 export type AppearanceChoice = "system" | AppearanceId;
@@ -19,6 +19,8 @@ export type AppearanceDefinition = {
   colorScheme: "light" | "dark";
   /** The single region that owns a saturated ground in this appearance (the committed-rail rule). */
   saturatedRegion: string;
+  /** The scene the appearance is for, in the operator's terms — the switcher shows it as the hint. */
+  useScene: string;
 };
 
 export const APPEARANCES: AppearanceDefinition[] = [
@@ -27,18 +29,28 @@ export const APPEARANCES: AppearanceDefinition[] = [
     label: "Light",
     colorScheme: "light",
     saturatedRegion: "the navigation rail, in ink",
+    useScene: "daylight",
   },
   {
     id: "dark",
     label: "Dark",
     colorScheme: "dark",
     saturatedRegion: "the navigation rail, in plum",
+    useScene: "night",
   },
   {
     id: "dusk",
     label: "Dusk",
     colorScheme: "light",
-    saturatedRegion: "the navigation rail, in plum",
+    saturatedRegion: "the navigation rail, in deep teal",
+    useScene: "dim light",
+  },
+  {
+    id: "ember",
+    label: "Ember",
+    colorScheme: "light",
+    saturatedRegion: "the navigation rail, in clay brown",
+    useScene: "warm light",
   },
 ];
 
@@ -63,6 +75,12 @@ export function readAppearance(): AppearanceChoice {
 export function resolvedAppearance(choice: AppearanceChoice): AppearanceId {
   if (choice !== "system") return choice;
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+/** The label an operator sees for a choice, including the machine-following one. */
+export function appearanceLabel(choice: AppearanceChoice): string {
+  if (choice === "system") return "System";
+  return APPEARANCES.find((appearance) => appearance.id === choice)?.label ?? choice;
 }
 
 export function applyAppearance(choice: AppearanceChoice): void {

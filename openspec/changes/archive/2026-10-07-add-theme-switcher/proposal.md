@@ -21,10 +21,14 @@ stays small enough to fit.
   pinned COLOURlovers palette** (`1001576` "Clay" by `eponine`). Light, Dusk and Dark cover a cool
   daylight, a dim cool room and the dark; a warm-lit room has no appearance of its own, and the panel
   spends its one saturated region on warm brown rather than on the plum or teal the others use.
-- **The registry gains the data the switcher needs**: each appearance carries the two colours its
-  entry previews, alongside the label and the region that owns its saturated ground. The preview is
-  data rather than a live token read, because a menu must show the colours of appearances that are not
-  currently applied.
+- **Each entry previews its appearance through that appearance's own scope**: the switcher renders a
+  row's swatch inside an element carrying that appearance's `data-theme`, so the preview is the real
+  tokens resolved in a subtree — which works for appearances that are not currently applied, the case
+  this was worried about. A first draft kept a copy of each appearance's colours in the registry for
+  the preview; that copy was dropped during implementation because a preview holding its own copy is a
+  preview that can drift from what choosing it does, and it would have added a four-colour field that
+  nothing else reads. The requirements are unaffected — they ask that a preview be the appearance's own
+  colours, not how it obtains them.
 - Behaviour of the existing capabilities is unchanged. The four appearances already shipping keep
   their tokens: this change must not repaint them, and the legibility bar applies to the new one on the
   same terms as the rest — including the focus ring, which is measured on the rail as well as on the

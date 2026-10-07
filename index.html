@@ -15,7 +15,7 @@
       // The id list mirrors `src/lib/appearance.ts`. This script runs before paint, so it cannot
       // import the registry — keep the two in step when an appearance is added.
       (function () {
-        var APPEARANCES = ["light", "dark", "dusk"];
+        var APPEARANCES = ["light", "dark", "dusk", "ember"];
         try {
           var stored = localStorage.getItem("admin-panel.appearance") || "system";
           var resolved = APPEARANCES.indexOf(stored) >= 0
