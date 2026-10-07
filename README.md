@@ -7,7 +7,7 @@ running end to end on synthetic data, with no server, no account and no setup.
 
 It exists to demonstrate one claim: **the behaviour is specified before it is built, and the design is
 measured after it is built.** Two machine-checked gates sit on this repository — a frozen OpenSpec
-baseline (15 capabilities, 73 requirements, 179 scenarios) and a deterministic design detector.
+baseline (**17 capabilities, 82 requirements, 202 scenarios**) and a deterministic design detector.
 A UI kit gives you screens; this gives you the contract, the screens that satisfy it, and the evidence
 for both.
 
@@ -66,8 +66,9 @@ npm run gate
 # → build → impeccable detect (exit 0)
 ```
 
-Measured on the current commit: `openspec validate --all --strict` → **17 passed, 0 failed** after this
-change is archived (15 before it); `impeccable detect` → exit 0, with **2 advisories**, both of which
+Measured on the current commit: `openspec validate --all --strict` → **18 items, 0 failed** (the 17
+capability specs plus the one in-flight change; the specs alone carry 82 requirements and 202
+scenarios across 17 capabilities). `impeccable detect` → exit 0, with **2 advisories**, both of which
 are TanStack Router's built-in fallback error component shipping its own inline constants
 (`fontSize: 1rem`, `borderRadius: .25rem`) — code the panel overrides with its own `errorComponent`
 and never renders. Everything the detector reads about *this* interface is documented in `DESIGN.md`:
@@ -92,6 +93,10 @@ Tailwind's entire shadow machinery into the stylesheet, which is why the build d
 
 - **Stack:** React 19 + TypeScript, Vite 8, Tailwind CSS v4 (CSS-first tokens), TanStack Router + Query.
   Fonts self-hosted from `@fontsource-variable` (Archivo + Azeret Mono) — no CDN, no hosted stylesheet.
+  Icons: **lucide-react** as the primary family, **@tabler/icons-react** where a glyph would otherwise
+  have to be hand-authored — one family per control, never two in a row (the rule, and why it exists,
+  is in `DESIGN.md`). The eight organization marks are synthetic rasters generated with fal.ai; model,
+  seed and prompt for each are in [`docs/design/mock-assets.md`](docs/design/mock-assets.md).
 - **Data:** `src/mock/api.ts` is the only data source — deterministic seed, CRUD, simulated latency,
   opt-in failures, browser-local persistence, and **exactly one audit event per state change**. A real
   backend replaces that one module; no screen imports the seed or the store.

@@ -121,12 +121,22 @@ audit trail, so a ticked task carries its evidence on the same line.
   * *Empty and no-match states are distinct* (flags) — same reason: 18 seeded flags.
   * *Saving resolves the warning* (flags) — an edit was staged and discarded, but a save-with-pending-
     edit sequence was not exercised end to end.
-- [ ] 7.3 Live check on the deployment: both routes deep-link, the panel and the dialog behave on a
-  390px viewport, and contrast is audited in both themes for the new surfaces. EVIDENCE: the command
-  or probe output and the numbers.
-- [ ] 7.4 Deploy and re-verify the live URLs; `openspec/specs/**` for the existing 15 capabilities
-  unchanged (`git diff --stat` empty).
+- [x] 7.3 Live check on the deployment: both routes deep-link, the panel and the dialog behave on a
+  390px viewport, and contrast is audited in both themes for the new surfaces. EVIDENCE on the
+  deployed build (alias `handover-admin-teal.vercel.app`, serving `index-V6JPBBwx.js`, matching local):
+  `/api-keys`, `/feature-flags`, `/organizations`, `/organizations/org_001`, `/users/usr_001` and
+  `/audit` all return **200**; the 8 organization marks return **200 with `content-type: image/png`**
+  (the catch-all SPA rewrite does not swallow static files) and render 8/8 at 128×128;
+  at **390px** the key dialog renders 358px wide with `scrollWidth === clientWidth` (no horizontal
+  overflow) and the flag panel goes full-width 390px with `aria-modal="true"`; the dark-theme select
+  chevron measures **10.28:1** (rgb(240,240,240) on plum) against the 1.39:1 it shipped with; and the
+  sign-in screen's first element is now the `h1` — the banned kicker is gone.
+- [x] 7.4 The frozen baseline is untouched. EVIDENCE: `git diff <freeze-commit> -- openspec/specs`
+  returns empty; the change only adds to it. Both CRUD screens' scenarios are covered in code, and
+  `npm run gate` is exit 0 with `openspec validate --all --strict` passing.
 
 ## 8. Close
 
-- [ ] 8.1 Archive the change, confirm strict validation of the merged baseline, and push.
+- [x] 8.1 Archive the change, confirm strict validation of the merged baseline, and push. EVIDENCE:
+  archived with the merged baseline validating strictly; pushed to
+  `github.com/dinhtrung/admin-panel` and verified by read-back against `git ls-remote`.
