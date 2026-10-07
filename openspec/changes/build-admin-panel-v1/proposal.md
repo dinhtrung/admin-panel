@@ -40,6 +40,13 @@ being a document and becomes a running artifact a reviewer can open and operate.
   `docs/design/palette.md` (palette provenance), `LICENSE`, `README.md`.
 - **Dependencies**: no new runtime dependency beyond the pinned stack; fonts self-hosted from
   `@fontsource-variable` packages, bundled at build time (no hosted font stylesheet, no CDN).
+  **Deviation from the baseline design note**: `@tanstack/react-table` was dropped. Version 9 is a
+  rewritten API (no `useReactTable`, no `getCoreRowModel`, a feature/`constructTable` model) and
+  building the shared grid on an API that new would be guessing rather than engineering. The grid is
+  implemented directly against the frozen `data-grid` requirements — sorting with announced state,
+  pagination, column control, selection and the bulk bar, four distinct presentations — and the
+  dependency was removed rather than left unused. The behaviour contract is unchanged; only the
+  implementation route differs.
 - **Not touched**: `openspec/specs/**` (frozen), `PRODUCT.md` (product truth), the existing
   `wip-admin-dashboard` repository.
 - **Release gates**: typecheck, lint, `openspec validate --all --strict`, `impeccable detect` exit 0.

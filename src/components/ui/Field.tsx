@@ -1,0 +1,183 @@
+/** Form primitives. Every control: visible label, hint, and an error that is associated with the
+ *  input (not just painted near it) and announced. */
+
+import { forwardRef, useId } from "react";
+import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
+import { cn } from "../../lib/cn";
+
+const CONTROL =
+  "w-full min-h-9 rounded-chip border border-rule-strong bg-panel px-2 text-body text-ink " +
+  "placeholder:text-ink-muted/70 disabled:cursor-not-allowed disabled:opacity-50";
+
+export function Field({
+  label,
+  hint,
+  error,
+  htmlFor,
+  children,
+  className,
+  optional = false,
+}: {
+  label: string;
+  hint?: string;
+  error?: string;
+  htmlFor: string;
+  children: ReactNode;
+  className?: string;
+  optional?: boolean;
+}) {
+  return (
+    <div className={cn("flex flex-col gap-1", className)}>
+      <label htmlFor={htmlFor} className="label text-ink-muted">
+        {label}
+        {optional ? <span className="ml-1 font-normal normal-case tracking-normal">(optional)</span> : null}
+      </label>
+      {children}
+      {hint && !error ? (
+        <p id={`${htmlFor}-hint`} className="text-[0.6875rem] text-ink-muted">
+          {hint}
+        </p>
+      ) : null}
+      {error ? (
+        <p id={`${htmlFor}-error`} className="text-[0.6875rem] font-semibold text-attention">
+          {error}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+export interface TextInputProps extends InputHTMLAttributes<HTMLInputElement> {
+  label: string;
+  hint?: string;
+  error?: string;
+}
+
+export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function TextInput(
+  { label, hint, error, className, id, ...rest },
+  ref,
+) {
+  const generated = useId();
+  const inputId = id ?? generated;
+  return (
+    <Field label={label} hint={hint} error={error} htmlFor={inputId}>
+      <input
+        ref={ref}
+        id={inputId}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined}
+        className={cn(CONTROL, error && "border-attention", className)}
+        {...rest}
+      />
+    </Field>
+  );
+});
+
+export interface SelectInputProps extends SelectHTMLAttributes<HTMLSelectElement> {
+  label: string;
+  hint?: string;
+  error?: string;
+  options: { value: string; label: string }[];
+}
+
+export const SelectInput = forwardRef<HTMLSelectElement, SelectInputProps>(function SelectInput(
+  { label, hint, error, options, className, id, ...rest },
+  ref,
+) {
+  const generated = useId();
+  const selectId = id ?? generated;
+  return (
+    <Field label={label} hint={hint} error={error} htmlFor={selectId}>
+      <select
+        ref={ref}
+        id={selectId}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${selectId}-error` : hint ? `${selectId}-hint` : undefined}
+        className={cn(CONTROL, "appearance-none bg-[right_0.5rem_center] pr-7", error && "border-attention", className)}
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4.5 6 8.5 10 4.5' fill='none' stroke='%23483048' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E\")",
+          backgroundRepeat: "no-repeat",
+        }}
+        {...rest}
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </Field>
+  );
+});
+
+export interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+  label: string;
+  hint?: string;
+  error?: string;
+}
+
+export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(function TextArea(
+  { label, hint, error, className, id, ...rest },
+  ref,
+) {
+  const generated = useId();
+  const areaId = id ?? generated;
+  return (
+    <Field label={label} hint={hint} error={error} htmlFor={areaId}>
+      <textarea
+        ref={ref}
+        id={areaId}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${areaId}-error` : hint ? `${areaId}-hint` : undefined}
+        className={cn(CONTROL, "min-h-20 py-1.5 leading-snug", error && "border-attention", className)}
+        {...rest}
+      />
+    </Field>
+  );
+});
+
+export function Checkbox({
+  label,
+  hint,
+  checked,
+  onChange,
+  disabled,
+  id,
+}: {
+  label: string;
+  hint?: string;
+  checked: boolean;
+  onChange: (next: boolean) => void;
+  disabled?: boolean;
+  id?: string;
+}) {
+  const generated = useId();
+  const boxId = id ?? generated;
+  return (
+    <div className="flex items-start gap-2">
+      <input
+        id={boxId}
+        type="checkbox"
+        checked={checked}
+        disabled={disabled}
+        onChange={(e) => onChange(e.target.checked)}
+        className={cn(
+          "mt-0.5 size-4 shrink-0 appearance-none rounded-[2px] border border-rule-strong bg-panel",
+          "checked:border-plum checked:bg-plum",
+          "checked:bg-[length:11px_11px] checked:bg-center checked:bg-no-repeat",
+          "disabled:cursor-not-allowed disabled:opacity-50",
+        )}
+        style={{
+          backgroundImage: checked
+            ? "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 6.2 4.7 8.4 9.5 3.6' fill='none' stroke='%23F0F0F0' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")"
+            : undefined,
+        }}
+      />
+      <label htmlFor={boxId} className="text-body leading-snug">
+        {label}
+        {hint ? <span className="block text-[0.6875rem] text-ink-muted">{hint}</span> : null}
+      </label>
+    </div>
+  );
+}

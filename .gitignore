@@ -34,3 +34,7 @@ dist-ssr
 # Local scratch
 .hermes/cache/
 
+# Vercel CLI project link (per-machine)
+.vercel
+
+.env*

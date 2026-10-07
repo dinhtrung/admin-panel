@@ -9,8 +9,8 @@
     "lint": "oxlint",
     "typecheck": "tsc -b",
     "gate:spec": "openspec validate --all --strict",
-    "gate:design": "IMP=${IMPECCABLE:-$HOME/.hermes/skills/impeccable/scripts/impeccable}; $IMP detect --json index.html src/index.css",
-    "gate": "npm run typecheck && npm run lint && npm run gate:spec && npm run gate:design",
+    "gate:design": "IMP=${IMPECCABLE:-$HOME/.hermes/skills/impeccable/scripts/impeccable}; $IMP detect --json dist index.html",
+    "gate": "npm run typecheck && npm run lint && npm run gate:spec && npm run build && npm run gate:design",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -18,8 +18,8 @@
     "@fontsource-variable/azeret-mono": "^5.3.0",
     "@tanstack/react-query": "^5.104.1",
     "@tanstack/react-router": "^1.170.41",
-    "@tanstack/react-table": "^9.2.6",
     "clsx": "^2.1.1",
+    "lucide-react": "^1.52.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "tailwind-merge": "^3.7.0"

@@ -99,6 +99,7 @@ deployed build, not mockups.
 
 ## Accessibility & Inclusion
 
-Target WCAG 2.2 AA: body text contrast ≥ 4.5:1 in both themes, interactive targets ≥ 44 px,
-complete keyboard operation with a visible focus ring, no information carried by colour alone, and
-table sort/filter/selection state announced to assistive technology.
+Target WCAG 2.2 AA: body text contrast ≥ 4.5:1 in both themes (verified by computing every shipped
+text/ground pair, not by eye), interactive targets at least 24×24 px with standalone controls
+growing a 44 px hit area, complete keyboard operation with a visible focus ring, no information
+carried by colour alone, and table sort/filter/selection state announced to assistive technology.

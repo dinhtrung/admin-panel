@@ -1,111 +1,224 @@
+/* Self-hosted faces — bundled at build time, no hosted stylesheet, no CDN, no data URI. */
+@import "@fontsource-variable/archivo/wght.css";
+@import "@fontsource-variable/azeret-mono/wght.css";
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/*
+  Handover — palette roles.
+  Source palette: COLOURlovers 1004609 "Yoko Hanako 1109" by _Mac_DyE_
+  (#181818 #F0F0F0 #D5DEF0 #903078 #483048). Provenance: docs/design/palette.md
+  Derived values are tints of the palette only; no sixth hue is introduced.
+*/
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  color-scheme: light;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  --palette-ink: #181818;
+  --palette-ground: #f0f0f0;
+  --palette-tint: #d5def0;
+  --palette-attention: #903078;
+  --palette-plum: #483048;
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* surfaces */
+  --board-ground: var(--palette-ground);
+  --board-panel: #ffffff;
+  --board-rail: var(--palette-ink);
+  --board-rail-ink: var(--palette-ground);
+  --board-hover: color-mix(in srgb, var(--palette-ink) 6%, transparent);
+  --board-selected: var(--palette-tint);
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
+  /* text */
+  --ink: var(--palette-ink);
+  --ink-muted: var(--palette-plum);
+
+  /* lines: the board is ruled, not shadowed */
+  --rule: color-mix(in srgb, var(--palette-ink) 16%, transparent);
+  --rule-strong: color-mix(in srgb, var(--palette-ink) 34%, transparent);
+
+  /* semantic roles */
+  --attention: var(--palette-attention);
+  --on-attention: #ffffff;
+  --plum: var(--palette-plum);
+  --on-plum: var(--palette-ground);
+  --focus: var(--palette-attention);
+
+  /* one elevation, overlays only */
+  --overlay-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.45);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --board-ground: var(--palette-ink);
+  --board-panel: color-mix(in srgb, var(--palette-plum) 24%, var(--palette-ink));
+  --board-rail: var(--palette-plum);
+  --board-rail-ink: var(--palette-ground);
+  --board-hover: color-mix(in srgb, var(--palette-ground) 10%, transparent);
+  --board-selected: color-mix(in srgb, var(--palette-tint) 24%, var(--palette-ink));
+
+  --ink: var(--palette-ground);
+  --ink-muted: var(--palette-tint);
+
+  --rule: color-mix(in srgb, var(--palette-ground) 18%, transparent);
+  --rule-strong: color-mix(in srgb, var(--palette-ground) 34%, transparent);
+
+  /* #903078 is 2.44:1 on the dark ground: fill only here, never text and never a ring. */
+  --attention: var(--palette-attention);
+  --on-attention: #ffffff;
+  --plum: var(--palette-plum);
+  --on-plum: var(--palette-ground);
+  --focus: var(--palette-tint);
+
+  --overlay-shadow: 0 12px 28px -12px rgb(0 0 0 / 0.7);
+}
+
+@theme inline {
+  --color-ground: var(--board-ground);
+  --color-panel: var(--board-panel);
+  --color-rail: var(--board-rail);
+  --color-rail-ink: var(--board-rail-ink);
+  --color-hover: var(--board-hover);
+  --color-selected: var(--board-selected);
+
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+
+  --color-attention: var(--attention);
+  --color-on-attention: var(--on-attention);
+  --color-plum: var(--plum);
+  --color-on-plum: var(--on-plum);
+  --color-focus: var(--focus);
+
+  --font-sans: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Azeret Mono Variable", ui-monospace, "SFMono-Regular", monospace;
+
+  /* A board has square corners; a 2px chip radius is the only rounding in the system. */
+  --radius-chip: 2px;
+
+  --text-label: 0.6875rem; /* 11px — printed column label */
+  --text-label--line-height: 1;
+  --text-label--letter-spacing: 0.07em;
+  --text-body: 0.8125rem; /* 13px */
+  --text-body--line-height: 1.5;
+  --text-lead: 0.875rem;
+  --text-title: 1.25rem; /* 20px */
+  --text-title--line-height: 1.2;
+  --text-title--letter-spacing: -0.015em;
+
+  --shadow-overlay: var(--overlay-shadow);
+}
+
+@layer base {
+  * {
+    scrollbar-color: var(--rule-strong) transparent;
+    scrollbar-width: thin;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--board-ground);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    caret-color: var(--attention);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Browser surfaces belong to the design too. */
+  ::selection {
+    background-color: var(--board-selected);
+    color: var(--palette-ink);
+  }
+
+  ::placeholder {
+    color: color-mix(in srgb, var(--palette-plum) 78%, transparent);
+    opacity: 1;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: var(--radius-chip);
+  }
+
+  a {
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+
+  /* Data aligns, or it cannot be scanned. */
+  table,
+  [data-numeric],
+  time,
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+
+  hr {
+    border-color: var(--rule);
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+@layer components {
+  /* Printed column label: the board's label grammar. */
+  .label {
+    font-size: 0.6875rem;
+    line-height: 1;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    font-weight: 600;
   }
 
-  #social .button-icon {
-    filter: invert(1) brightness(2);
+  /* The signature move: a magnet — a fixed-size state carrier in a fixed slot. */
+  .magnet {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    width: 5.5rem;
+    height: 1.375rem;
+    border-radius: var(--radius-chip);
+    font-size: 0.6875rem;
+    line-height: 1;
+    letter-spacing: 0.07em;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* Handover sweep — the one authored motion moment, run when the board is re-scoped. */
+  .sweep {
+    animation: handover-sweep 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(var(--sweep-index, 0) * 18ms);
   }
 }
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-}
-
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
+@keyframes handover-sweep {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
 }
