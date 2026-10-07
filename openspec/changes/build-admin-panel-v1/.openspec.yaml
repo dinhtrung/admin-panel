@@ -1,0 +1,4 @@
+schema: spec-driven
+created: 2026-10-07
+goal: Implement the frozen baseline — design system, mock API layer, app shell, authentication, access control, data grid and the seven admin surfaces — with the design gates and static delivery.
+skip_specs: true
