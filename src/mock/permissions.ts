@@ -28,6 +28,11 @@ export const PERMISSIONS: PermissionDef[] = [
   { id: "sessions.revoke", group: "Security", label: "Revoke sessions", destructive: true },
   { id: "audit.read", group: "Security", label: "Read the audit record" },
 
+  { id: "apikeys.read", group: "Credentials", label: "Read API keys" },
+  { id: "apikeys.write", group: "Credentials", label: "Issue, edit and revoke API keys", destructive: true },
+  { id: "flags.read", group: "Delivery", label: "Read feature flags" },
+  { id: "flags.write", group: "Delivery", label: "Create, edit and delete feature flags" },
+
   { id: "settings.write", group: "Workspace", label: "Change workspace settings", destructive: true },
 ];
 
@@ -71,14 +76,32 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     name: "Support",
     description: "Reads the directory and can end sessions, but never changes people or access.",
     system: true,
-    permissions: ["dashboard.read", "users.read", "sessions.read", "sessions.revoke", "audit.read", "orgs.read"],
+    permissions: [
+      "dashboard.read",
+      "users.read",
+      "sessions.read",
+      "sessions.revoke",
+      "audit.read",
+      "orgs.read",
+      "apikeys.read",
+      "flags.read",
+    ],
   },
   {
     id: "role_viewer",
     name: "Viewer",
     description: "Read-only across the board.",
     system: true,
-    permissions: ["dashboard.read", "users.read", "roles.read", "orgs.read", "sessions.read", "audit.read"],
+    permissions: [
+      "dashboard.read",
+      "users.read",
+      "roles.read",
+      "orgs.read",
+      "sessions.read",
+      "audit.read",
+      "apikeys.read",
+      "flags.read",
+    ],
   },
   {
     id: "role_billing",

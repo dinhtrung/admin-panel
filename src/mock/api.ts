@@ -12,10 +12,15 @@
 
 import { isAdministrationRole, permissionUnion, PERMISSION_IDS } from "./permissions";
 import { SCHEMA_VERSION, seed, type Database } from "./seed";
+import { API_SCOPES, FLAG_ENVIRONMENTS } from "./types";
 import {
   ApiError,
+  type ApiKey,
+  type ApiKeyInput,
   type AuditEvent,
   type DashboardSummary,
+  type FeatureFlag,
+  type FeatureFlagInput,
   type FieldChange,
   type Identity,
   type ListQuery,
@@ -31,6 +36,7 @@ import {
 } from "./types";
 
 const STORAGE_KEY = "admin-panel.db";
+const FAILURE_KEY = "admin-panel.failure";
 const DAY = 86_400_000;
 export const PAGE_SIZES = [10, 25, 50] as const;
 export const DEFAULT_PAGE_SIZE = 25;
@@ -43,9 +49,21 @@ interface Runtime {
   actor: { id: string; name: string };
 }
 
+/** The failure switch has to survive a page reload: the natural way a reviewer checks an error state
+ *  is to arm the switch and reload, and a flag held only in module memory resets exactly then — the
+ *  switch would appear to do nothing at all. It is per-tab (sessionStorage), not per-machine. */
+function storedFailure(): FailureMode {
+  try {
+    const raw = sessionStorage.getItem(FAILURE_KEY);
+    return raw === "next" || raw === "always" ? raw : "off";
+  } catch {
+    return "off";
+  }
+}
+
 const runtime: Runtime = {
   latencyMs: 160,
-  failure: "off",
+  failure: storedFailure(),
   actor: { id: "usr_owner", name: "Mara Ilesanmi" },
 };
 
@@ -94,7 +112,14 @@ function mutate<T>(fn: (db: Database) => T): T {
 
 export function configure(options: { latencyMs?: number; failure?: FailureMode }): void {
   if (options.latencyMs !== undefined) runtime.latencyMs = options.latencyMs;
-  if (options.failure !== undefined) runtime.failure = options.failure;
+  if (options.failure !== undefined) {
+    runtime.failure = options.failure;
+    try {
+      sessionStorage.setItem(FAILURE_KEY, options.failure);
+    } catch {
+      // storage unavailable: the switch still applies for this session
+    }
+  }
 }
 
 export function currentRuntime(): Runtime {
@@ -159,7 +184,14 @@ async function gate(): Promise<void> {
   }
   if (runtime.failure === "always" || runtime.failure === "next") {
     const wasNext = runtime.failure === "next";
-    if (wasNext) runtime.failure = "off";
+    if (wasNext) {
+      runtime.failure = "off";
+      try {
+        sessionStorage.setItem(FAILURE_KEY, "off");
+      } catch {
+        // storage unavailable: nothing to clear
+      }
+    }
     throw new ApiError(
       wasNext ? "server" : "offline",
       wasNext
@@ -902,5 +934,350 @@ export async function updateSettings(input: Partial<WorkspaceSettings>): Promise
       changes: diff(changes),
     });
     return next;
+  });
+}
+
+/* ------------------------------------------------------------------ API keys
+ * The write path for the dialog CRUD surface. The secret exists only in the return value of
+ * `createApiKey`: the store keeps a fingerprint, so no surface can ever show it again. */
+
+function requireApiKey(db: Database, id: string): ApiKey {
+  const key = db.apiKeys.find((k) => k.id === id);
+  if (!key) throw new ApiError("not_found", `No API key ${id}. It may have been revoked and removed.`);
+  return key;
+}
+
+function validateApiKeyName(db: Database, name: string, selfId?: string): string {
+  const trimmed = name.trim();
+  if (trimmed.length < 2) throw new ApiError("conflict", "A key name of at least two characters is required.");
+  if (db.apiKeys.some((k) => k.id !== selfId && k.name.toLowerCase() === trimmed.toLowerCase())) {
+    throw new ApiError("conflict", `A key called “${trimmed}” already exists.`);
+  }
+  return trimmed;
+}
+
+function validateScopes(scopes: string[]): string[] {
+  const valid = scopes.filter((s) => API_SCOPES.some((def) => def.id === s));
+  if (valid.length === 0) {
+    throw new ApiError("conflict", "A key needs at least one scope — a key that may do nothing is not useful.");
+  }
+  return valid;
+}
+
+function generateSecret(environment: ApiKey["environment"]): string {
+  const bytes = new Uint8Array(24);
+  crypto.getRandomValues(bytes);
+  const body = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+  return `sk_${environment}_${body}`;
+}
+
+function fingerprintOf(secret: string): string {
+  // Deterministic, non-reversible-enough for a demo: a short digest of the secret, never the secret.
+  let h1 = 0x811c9dc5;
+  let h2 = 0x1000193;
+  for (let i = 0; i < secret.length; i += 1) {
+    h1 = (h1 ^ secret.charCodeAt(i)) * 0x01000193;
+    h2 = (h2 + secret.charCodeAt(i) * (i + 7)) >>> 0;
+  }
+  return `fp_${(h1 >>> 0).toString(36)}${h2.toString(36)}`;
+}
+
+export async function listApiKeys(query: ListQuery = {}): Promise<Page<ApiKey>> {
+  await gate();
+  const db = readStore();
+  let rows = [...db.apiKeys];
+  const q = query.q?.trim().toLowerCase();
+  if (q) rows = rows.filter((k) => k.name.toLowerCase().includes(q) || k.lastFour.includes(q));
+  if (query.status) rows = rows.filter((k) => k.status === query.status);
+  if (query.environment) rows = rows.filter((k) => k.environment === query.environment);
+  rows = sortRows(rows, query.sort, query.dir ?? (query.sort === "createdAt" ? "desc" : "asc"), (k, field) => {
+    if (field === "lastUsedAt") return k.lastUsedAt ?? "";
+    if (field === "createdAt") return k.createdAt;
+    if (field === "status") return k.status;
+    if (field === "environment") return k.environment;
+    return k.name;
+  });
+  return paginate(rows, query);
+}
+
+export async function getApiKey(id: string): Promise<ApiKey> {
+  await gate();
+  return { ...requireApiKey(readStore(), id) };
+}
+
+export async function createApiKey(input: ApiKeyInput): Promise<{ key: ApiKey; secret: string }> {
+  await gate();
+  return mutate((db) => {
+    const name = validateApiKeyName(db, input.name);
+    const scopes = validateScopes(input.scopes);
+    const secret = generateSecret(input.environment);
+    const key: ApiKey = {
+      id: nextId("key", db.apiKeys),
+      name,
+      fingerprint: fingerprintOf(secret),
+      lastFour: secret.slice(-4),
+      scopes,
+      environment: input.environment,
+      status: "active",
+      createdAt: new Date(nowMs()).toISOString(),
+      lastUsedAt: null,
+      createdBy: runtime.actor.id,
+    };
+    db.apiKeys = [key, ...db.apiKeys];
+    appendEvent(db, {
+      action: "apikey.issued",
+      targetType: "api_key",
+      targetId: key.id,
+      targetLabel: key.name,
+      changes: diff([
+        { field: "scopes", before: null, after: scopes.join(", ") },
+        { field: "environment", before: null, after: key.environment },
+        { field: "status", before: null, after: "active" },
+      ]),
+    });
+    return { key, secret };
+  });
+}
+
+export async function updateApiKey(id: string, input: Partial<ApiKeyInput>): Promise<ApiKey> {
+  await gate();
+  return mutate((db) => {
+    const key = requireApiKey(db, id);
+    if (key.status === "revoked") {
+      throw new ApiError("conflict", `${key.name} is revoked, so it cannot be edited.`);
+    }
+    const next: ApiKey = { ...key };
+    const changes: FieldChange[] = [];
+    if (input.name !== undefined) {
+      const name = validateApiKeyName(db, input.name, id);
+      if (name !== key.name) {
+        changes.push({ field: "name", before: key.name, after: name });
+        next.name = name;
+      }
+    }
+    if (input.scopes !== undefined) {
+      const scopes = validateScopes(input.scopes);
+      if ([...scopes].sort().join(",") !== [...key.scopes].sort().join(",")) {
+        changes.push({ field: "scopes", before: key.scopes.join(", "), after: scopes.join(", ") });
+        next.scopes = scopes;
+      }
+    }
+    if (input.environment !== undefined && input.environment !== key.environment) {
+      changes.push({ field: "environment", before: key.environment, after: input.environment });
+      next.environment = input.environment;
+    }
+    if (changes.length === 0) return key;
+    db.apiKeys = db.apiKeys.map((k) => (k.id === id ? next : k));
+    appendEvent(db, {
+      action: "apikey.updated",
+      targetType: "api_key",
+      targetId: next.id,
+      targetLabel: next.name,
+      changes: diff(changes),
+    });
+    return next;
+  });
+}
+
+export async function revokeApiKey(id: string): Promise<void> {
+  await gate();
+  return mutate((db) => {
+    const key = requireApiKey(db, id);
+    if (key.status === "revoked") {
+      throw new ApiError("conflict", `${key.name} has already been revoked.`);
+    }
+    db.apiKeys = db.apiKeys.map((k) => (k.id === id ? { ...k, status: "revoked" as const } : k));
+    appendEvent(db, {
+      action: "apikey.revoked",
+      targetType: "api_key",
+      targetId: key.id,
+      targetLabel: key.name,
+      changes: [{ field: "status", before: "active", after: "revoked" }],
+    });
+  });
+}
+
+/* ------------------------------------------------------------------ feature flags
+ * The write path for the side-panel CRUD surface. */
+
+function requireFlag(db: Database, id: string): FeatureFlag {
+  const flag = db.flags.find((f) => f.id === id);
+  if (!flag) throw new ApiError("not_found", `No feature flag ${id}.`);
+  return flag;
+}
+
+function validateFlagKey(db: Database, key: string, selfId?: string): string {
+  const trimmed = key.trim();
+  if (!/^[a-z0-9]+([.-][a-z0-9]+)*$/.test(trimmed) || trimmed.length < 3) {
+    throw new ApiError(
+      "conflict",
+      `“${trimmed}” is not a valid key. Use lowercase words separated by single hyphens or dots, for example checkout.express-lane.`,
+    );
+  }
+  if (db.flags.some((f) => f.id !== selfId && f.key === trimmed)) {
+    throw new ApiError("conflict", `A flag with the key “${trimmed}” already exists.`);
+  }
+  return trimmed;
+}
+
+function validateRollout(rollout: number): number {
+  if (!Number.isInteger(rollout) || rollout < 0 || rollout > 100) {
+    throw new ApiError("conflict", "Rollout must be a whole number between 0 and 100.");
+  }
+  return rollout;
+}
+
+export async function listFlags(query: ListQuery = {}): Promise<Page<FeatureFlag & { owner: User | undefined }>> {
+  await gate();
+  const db = readStore();
+  let rows = db.flags;
+  const q = query.q?.trim().toLowerCase();
+  if (q) rows = rows.filter((f) => f.name.toLowerCase().includes(q) || f.key.toLowerCase().includes(q));
+  if (query.status) rows = rows.filter((f) => f.state === query.status);
+  if (query.environment) rows = rows.filter((f) => f.environments.includes(query.environment!));
+  const withOwner = rows.map((f) => ({ ...f, owner: db.users.find((u) => u.id === f.ownerId) }));
+  const sorted = sortRows(withOwner, query.sort, query.dir ?? "asc", (f, field) => {
+    if (field === "state") return f.state;
+    if (field === "rollout") return f.rollout;
+    if (field === "updatedAt") return f.updatedAt;
+    if (field === "owner") return f.owner?.name ?? "";
+    return f.name;
+  });
+  return paginate(sorted, query);
+}
+
+export async function getFlag(id: string): Promise<FeatureFlag> {
+  await gate();
+  return { ...requireFlag(readStore(), id) };
+}
+
+export async function createFlag(input: FeatureFlagInput): Promise<FeatureFlag> {
+  await gate();
+  return mutate((db) => {
+    const key = validateFlagKey(db, input.key);
+    const name = input.name.trim();
+    if (name.length < 2) throw new ApiError("conflict", "A flag name of at least two characters is required.");
+    const rollout = validateRollout(input.rollout);
+    const environments = input.environments.filter((e) => FLAG_ENVIRONMENTS.includes(e));
+    if (environments.length === 0) {
+      throw new ApiError("conflict", "A flag has to apply to at least one environment.");
+    }
+    const owner = db.users.find((u) => u.id === input.ownerId);
+    if (!owner) throw new ApiError("conflict", "Choose an owner from the directory.");
+    const now = new Date(nowMs()).toISOString();
+    const flag: FeatureFlag = {
+      id: nextId("flag", db.flags),
+      key,
+      name,
+      description: input.description.trim(),
+      state: input.state,
+      rollout,
+      environments,
+      ownerId: owner.id,
+      createdAt: now,
+      updatedAt: now,
+      updatedBy: runtime.actor.id,
+    };
+    db.flags = [flag, ...db.flags];
+    appendEvent(db, {
+      action: "flag.created",
+      targetType: "flag",
+      targetId: flag.id,
+      targetLabel: flag.key,
+      changes: diff([
+        { field: "state", before: null, after: flag.state },
+        { field: "rollout", before: null, after: `${flag.rollout}%` },
+        { field: "environments", before: null, after: environments.join(", ") },
+      ]),
+    });
+    return flag;
+  });
+}
+
+export async function updateFlag(id: string, input: Partial<FeatureFlagInput>): Promise<FeatureFlag> {
+  await gate();
+  return mutate((db) => {
+    const flag = requireFlag(db, id);
+    const next: FeatureFlag = { ...flag };
+    const changes: FieldChange[] = [];
+
+    if (input.key !== undefined) {
+      const key = validateFlagKey(db, input.key, id);
+      if (key !== flag.key) {
+        changes.push({ field: "key", before: flag.key, after: key });
+        next.key = key;
+      }
+    }
+    if (input.name !== undefined) {
+      const name = input.name.trim();
+      if (name.length < 2) throw new ApiError("conflict", "A flag name of at least two characters is required.");
+      if (name !== flag.name) {
+        changes.push({ field: "name", before: flag.name, after: name });
+        next.name = name;
+      }
+    }
+    if (input.description !== undefined && input.description.trim() !== flag.description) {
+      changes.push({ field: "description", before: flag.description, after: input.description.trim() });
+      next.description = input.description.trim();
+    }
+    if (input.state !== undefined && input.state !== flag.state) {
+      changes.push({ field: "state", before: flag.state, after: input.state });
+      next.state = input.state;
+    }
+    if (input.rollout !== undefined) {
+      const rollout = validateRollout(input.rollout);
+      if (rollout !== flag.rollout) {
+        changes.push({ field: "rollout", before: `${flag.rollout}%`, after: `${rollout}%` });
+        next.rollout = rollout;
+      }
+    }
+    if (input.environments !== undefined) {
+      const environments = input.environments.filter((e) => FLAG_ENVIRONMENTS.includes(e));
+      if (environments.length === 0) {
+        throw new ApiError("conflict", "A flag has to apply to at least one environment.");
+      }
+      if ([...environments].sort().join(",") !== [...flag.environments].sort().join(",")) {
+        changes.push({
+          field: "environments",
+          before: flag.environments.join(", "),
+          after: environments.join(", "),
+        });
+        next.environments = environments;
+      }
+    }
+    if (input.ownerId !== undefined && input.ownerId !== flag.ownerId) {
+      const owner = db.users.find((u) => u.id === input.ownerId);
+      if (!owner) throw new ApiError("conflict", "Choose an owner from the directory.");
+      changes.push({ field: "owner", before: flag.ownerId, after: owner.id });
+      next.ownerId = owner.id;
+    }
+
+    if (changes.length === 0) return flag;
+    next.updatedAt = new Date(nowMs()).toISOString();
+    next.updatedBy = runtime.actor.id;
+    db.flags = db.flags.map((f) => (f.id === id ? next : f));
+    appendEvent(db, {
+      action: "flag.updated",
+      targetType: "flag",
+      targetId: next.id,
+      targetLabel: next.key,
+      changes: diff(changes),
+    });
+    return next;
+  });
+}
+
+export async function deleteFlag(id: string): Promise<void> {
+  await gate();
+  return mutate((db) => {
+    const flag = requireFlag(db, id);
+    db.flags = db.flags.filter((f) => f.id !== id);
+    appendEvent(db, {
+      action: "flag.deleted",
+      targetType: "flag",
+      targetId: flag.id,
+      targetLabel: flag.key,
+      changes: [{ field: "state", before: flag.state, after: null }],
+    });
   });
 }

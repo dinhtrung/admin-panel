@@ -7,9 +7,14 @@
 
 import { DEMO_IDENTITIES } from "./accounts";
 import { ROLE_TEMPLATES } from "./permissions";
+import { API_SCOPES } from "./types";
 import type {
+  ApiKey,
+  ApiKeyStatus,
   AuditEvent,
+  FeatureFlag,
   FieldChange,
+  FlagState,
   Membership,
   MembershipRole,
   Organization,
@@ -22,7 +27,7 @@ import type {
   WorkspaceSettings,
 } from "./types";
 
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
 
 export interface Database {
   version: number;
@@ -33,6 +38,8 @@ export interface Database {
   memberships: Membership[];
   sessions: Session[];
   audit: AuditEvent[];
+  apiKeys: ApiKey[];
+  flags: FeatureFlag[];
   settings: WorkspaceSettings;
   currentSessionId: string;
 }
@@ -294,6 +301,266 @@ export function seed(anchorMs: number): Database {
   }
   audit.sort((a, b) => (a.at < b.at ? 1 : -1));
 
+  /* ---- API keys: the dialog CRUD surface. The secret is never seeded or stored — only a
+   *      fingerprint and the last four characters, so nothing here can be replayed. ---- */
+  const API_KEY_NAMES = [
+    "CI pipeline",
+    "Analytics export",
+    "Mobile app",
+    "Support tooling",
+    "Billing sync",
+    "Data warehouse load",
+    "Webhook relay",
+    "Status page",
+    "On-call rotation",
+    "Partner integration",
+    "Reconciliation job",
+    "Audit exporter",
+    "Kiosk device",
+    "Legacy importer",
+    "Load test harness",
+    "Regional failover",
+  ];
+
+  const apiKeys: ApiKey[] = API_KEY_NAMES.map((name, i) => {
+    const status: ApiKeyStatus = i % 6 === 4 ? "revoked" : "active";
+    const scopeCount = 1 + Math.floor(r() * 3);
+    const scopes: string[] = [];
+    for (let s = 0; s < scopeCount; s += 1) {
+      const scope = pick(r, API_SCOPES).id;
+      if (!scopes.includes(scope)) scopes.push(scope);
+    }
+    const createdAt = iso(Math.floor((3 + r() * 320) * DAY));
+    return {
+      id: `key_${String(i + 1).padStart(3, "0")}`,
+      name,
+      fingerprint: `fp_${Math.floor(r() * 1e12).toString(36)}${Math.floor(r() * 1e6).toString(36)}`,
+      lastFour: Math.floor(r() * 10000)
+        .toString()
+        .padStart(4, "0"),
+      scopes,
+      environment: r() < 0.72 ? "live" : "test",
+      status,
+      createdAt,
+      lastUsedAt: status === "revoked" || r() < 0.18 ? null : iso(Math.floor(r() * 18 * DAY)),
+      createdBy: pick(r, DEMO).id,
+    };
+  });
+
+  /* ---- Feature flags: the side-panel CRUD surface ---- */
+  const FLAG_SEED: {
+    key: string;
+    name: string;
+    description: string;
+    state: FlagState;
+    rollout: number;
+  }[] = [
+    {
+      key: "checkout.express-lane",
+      name: "Express lane at checkout",
+      description: "Skip address validation for customers who have ordered before.",
+      state: "gradual",
+      rollout: 25,
+    },
+    {
+      key: "search.v2-ranking",
+      name: "Ranking model v2",
+      description: "Second-generation ranking behind the same search surface.",
+      state: "gradual",
+      rollout: 60,
+    },
+    {
+      key: "notifications.digest-email",
+      name: "Daily digest email",
+      description: "One summary message per day instead of one per event.",
+      state: "on",
+      rollout: 100,
+    },
+    {
+      key: "billing.invoice-pdf",
+      name: "Invoice PDF generation",
+      description: "Generate the invoice document on demand rather than at issue time.",
+      state: "on",
+      rollout: 100,
+    },
+    {
+      key: "onboarding.checklist",
+      name: "Onboarding checklist",
+      description: "Guide a new workspace through its first five tasks.",
+      state: "on",
+      rollout: 100,
+    },
+    {
+      key: "sessions.geo-alerts",
+      name: "Impossible-travel alerts",
+      description: "Flag a session whose location cannot follow the previous one.",
+      state: "off",
+      rollout: 0,
+    },
+    {
+      key: "audit.streaming-export",
+      name: "Streaming audit export",
+      description: "Ship audit events to the warehouse continuously rather than nightly.",
+      state: "off",
+      rollout: 0,
+    },
+    {
+      key: "audit.retention-extension",
+      name: "Extended audit retention",
+      description: "Keep the audit record for 24 months instead of 12.",
+      state: "gradual",
+      rollout: 10,
+    },
+    {
+      key: "roles.matrix-quickedit",
+      name: "Quick edit in the permission matrix",
+      description: "Stage and apply permission changes without leaving the page.",
+      state: "on",
+      rollout: 100,
+    },
+    {
+      key: "tables.column-presets",
+      name: "Saved column presets",
+      description: "Remember a column selection per list and per operator.",
+      state: "gradual",
+      rollout: 40,
+    },
+    {
+      key: "tables.density-compact",
+      name: "Compact row density",
+      description: "Offer a tighter row height for very long lists.",
+      state: "off",
+      rollout: 0,
+    },
+    {
+      key: "orgs.scope-switcher-v2",
+      name: "Scope switcher v2",
+      description: "Switch the board's organization scope without a full reload.",
+      state: "on",
+      rollout: 100,
+    },
+    {
+      key: "security.step-up-reauth",
+      name: "Step-up re-authentication",
+      description: "Ask for a fresh credential before a destructive action.",
+      state: "off",
+      rollout: 0,
+    },
+    {
+      key: "security.session-cap",
+      name: "Session count cap",
+      description: "Refuse a new session beyond the operator's device limit.",
+      state: "gradual",
+      rollout: 15,
+    },
+    {
+      key: "support.context-panel",
+      name: "Support context panel",
+      description: "Show the last ten events for a record beside the record.",
+      state: "on",
+      rollout: 100,
+    },
+    {
+      key: "search.saved-queries",
+      name: "Saved queries",
+      description: "Keep a named filter set per operator.",
+      state: "off",
+      rollout: 0,
+    },
+    {
+      key: "runtime.mock-latency",
+      name: "Simulated request latency",
+      description: "Keep the demo's latency so the loading states are visible.",
+      state: "on",
+      rollout: 100,
+    },
+    {
+      key: "runtime.failure-switch",
+      name: "Failure switch",
+      description: "Expose the panel's failure injection to whoever is reviewing it.",
+      state: "on",
+      rollout: 100,
+    },
+  ];
+
+  const flagOwners = users.filter((u) => u.status === "active" && (u.roleIds.includes("role_admin") || u.roleIds.includes("role_owner")));
+  const environmentSets = [
+    ["production", "staging"],
+    ["production"],
+    ["staging", "development"],
+    ["production", "staging", "development"],
+  ];
+
+  const flags: FeatureFlag[] = FLAG_SEED.map((f, i) => {
+    const createdAt = iso(Math.floor((20 + r() * 260) * DAY));
+    const owner = pick(r, flagOwners.length > 0 ? flagOwners : users);
+    return {
+      id: `flag_${String(i + 1).padStart(3, "0")}`,
+      key: f.key,
+      name: f.name,
+      description: f.description,
+      state: f.state,
+      rollout: f.rollout,
+      environments: pick(r, environmentSets),
+      ownerId: owner.id,
+      createdAt,
+      updatedAt: iso(Math.floor(r() * 21 * DAY)),
+      updatedBy: pick(r, flagOwners.length > 0 ? flagOwners : users).id,
+    };
+  });
+
+  /* ---- a short history for the two new surfaces, so the audit record is not silent about them ---- */
+  const history: AuditEvent[] = [];
+  const pushHistory = (
+    action: string,
+    targetType: AuditEvent["targetType"],
+    targetId: string,
+    targetLabel: string,
+    changes: FieldChange[],
+  ) => {
+    const actor = pick(r, actors);
+    history.push({
+      id: `evt_${String(9000 + history.length).padStart(4, "0")}`,
+      at: iso(Math.floor(r() * 45 * DAY) + Math.floor(r() * 12 * HOUR)),
+      actorId: actor.id,
+      actorName: actor.name,
+      action,
+      targetType,
+      targetId,
+      targetLabel,
+      ip: ip(r),
+      changes,
+    });
+  };
+
+  for (const key of apiKeys.slice(0, 9)) {
+    pushHistory("apikey.issued", "api_key", key.id, key.name, [
+      { field: "scopes", before: null, after: key.scopes.join(", ") },
+      { field: "environment", before: null, after: key.environment },
+    ]);
+    if (key.status === "revoked") {
+      pushHistory("apikey.revoked", "api_key", key.id, key.name, [
+        { field: "status", before: "active", after: "revoked" },
+      ]);
+    } else if (r() < 0.4) {
+      pushHistory("apikey.updated", "api_key", key.id, key.name, [
+        { field: "scopes", before: `${key.scopes.length} granted`, after: `${key.scopes.length + 1} granted` },
+      ]);
+    }
+  }
+  for (const flag of flags.slice(0, 10)) {
+    pushHistory("flag.created", "flag", flag.id, flag.key, [
+      { field: "state", before: null, after: flag.state },
+    ]);
+    if (r() < 0.5) {
+      pushHistory("flag.updated", "flag", flag.id, flag.key, [
+        { field: "rollout", before: String(Math.max(0, flag.rollout - 15)), after: `${flag.rollout}%` },
+      ]);
+    }
+  }
+  audit.push(...history);
+  audit.sort((a, b) => (a.at < b.at ? 1 : -1));
+
   const settings: WorkspaceSettings = {
     name: "Admin panel",
     slug: "admin-panel",
@@ -310,6 +577,8 @@ export function seed(anchorMs: number): Database {
     memberships,
     sessions,
     audit,
+    apiKeys,
+    flags,
     settings,
     currentSessionId: sessions[0]?.id ?? "ses_0001",
   };

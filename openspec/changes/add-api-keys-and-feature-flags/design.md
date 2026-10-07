@@ -41,16 +41,21 @@ the point of the request is the two patterns. Also rejected: bolting CRUD onto t
 roles pages instead of adding objects, which would modify frozen capabilities and put two different
 editing patterns behind the same page.
 
-### D2 — The side panel is an overlay, not a layout push
+### D2 — The side panel is non-modal beside the directory, modal when it takes the width
 
-The panel enters from the right edge and covers at most half the viewport at desktop sizes, full width
-on a narrow viewport. It is an overlay with `role="dialog"` and `aria-modal`, containing focus while
-open and returning it to the trigger on dismiss.
+At desktop sizes the panel enters from the right edge, covers at most half the viewport, and is **not
+modal**: no backdrop and no focus trap, because the operator is editing a record while watching the
+directory it belongs to, and a dimming backdrop that swallows clicks defeats the pattern. Below the
+narrow breakpoint there is no "beside" left to keep usable, so the panel takes the full width, becomes
+`aria-modal` with a backdrop, and contains focus so the keyboard cannot wander into a table nobody can
+see. Either way focus enters the panel, Escape dismisses it, and focus returns to the trigger.
 
 *Rejected:* a push layout that shrinks the board while the panel is open — the grid's column widths
 would reflow mid-edit, and a table that moves under the operator's cursor is worse than one that is
 partly covered. Also rejected: an inline expanded row (too few fields fit) and a full route (loses the
-directory, which is the entire reason this pattern exists).
+directory, which is the entire reason this pattern exists). Also rejected: one always-modal panel —
+it would have been simpler and would have contradicted the capability's own requirement that the
+directory stays usable.
 
 ### D3 — The secret is shown once and is never stored
 

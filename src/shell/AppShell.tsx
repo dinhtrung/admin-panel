@@ -38,7 +38,10 @@ const NAV: { group: string; items: NavItem[] }[] = [
   },
   {
     group: "Access",
-    items: [{ to: "/organizations", label: "Organizations", permission: "orgs.read" }],
+    items: [
+      { to: "/organizations", label: "Organizations", permission: "orgs.read" },
+      { to: "/api-keys", label: "API keys", permission: "apikeys.read" },
+    ],
   },
   {
     group: "Security",
@@ -49,7 +52,10 @@ const NAV: { group: string; items: NavItem[] }[] = [
   },
   {
     group: "Workspace",
-    items: [{ to: "/settings", label: "Settings", permission: "settings.write" }],
+    items: [
+      { to: "/feature-flags", label: "Feature flags", permission: "flags.read" },
+      { to: "/settings", label: "Settings", permission: "settings.write" },
+    ],
   },
 ];
 

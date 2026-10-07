@@ -4,9 +4,13 @@
  *  (deep links must resolve), so they are declared in one file. The root route owns the auth gate and
  *  the shell; each screen owns its own header and permission gate. */
 
-import { createRootRoute, createRoute, createRouter, Outlet, useNavigate } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
+import { createRootRoute, createRoute, createRouter, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "./shell/AppShell";
 import { useAuth } from "./auth/session";
+import { getSettings } from "./mock/api";
+import type { WorkspaceSettings } from "./mock/types";
 import { SignInScreen } from "./screens/SignInScreen";
 import { DashboardScreen } from "./screens/DashboardScreen";
 import { UserListScreen } from "./screens/UserListScreen";
@@ -19,10 +23,43 @@ import { SessionListScreen } from "./screens/SessionListScreen";
 import { AuditListScreen } from "./screens/AuditListScreen";
 import { AuditDetailScreen } from "./screens/AuditDetailScreen";
 import { SettingsScreen } from "./screens/SettingsScreen";
+import { ApiKeysScreen } from "./screens/ApiKeysScreen";
+import { FeatureFlagsScreen } from "./screens/FeatureFlagsScreen";
 import { Button, ErrorState, LoadingRows, NotFoundState } from "./components/ui";
+
+/** The saved default landing surface, as an address. */
+const LANDING: Record<WorkspaceSettings["defaultLanding"], string> = {
+  dashboard: "/",
+  users: "/users",
+  sessions: "/sessions",
+  audit: "/audit",
+};
 
 function RootLayout() {
   const { state } = useAuth();
+  const navigate = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const applied = useRef(false);
+  const { data: settings } = useQuery({
+    queryKey: ["settings"],
+    queryFn: getSettings,
+    enabled: state === "signed_in",
+  });
+
+  // The saved default landing surface is honoured once per sign-in, and only when the operator
+  // arrived on the landing surface itself: an explicit deep link is never hijacked.
+  useEffect(() => {
+    if (state !== "signed_in") {
+      applied.current = false;
+      return;
+    }
+    if (applied.current || !settings) return;
+    applied.current = true;
+    if (pathname !== "/") return;
+    const target = LANDING[settings.defaultLanding] ?? "/";
+    if (target !== "/") void navigate({ to: target });
+  }, [state, settings, pathname, navigate]);
+
   if (state === "restoring") {
     return (
       <div className="min-h-svh bg-ground px-3 py-4 sm:px-5">
@@ -126,6 +163,18 @@ const settingsRoute = createRoute({
   component: SettingsScreen,
 });
 
+const apiKeysRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/api-keys",
+  component: ApiKeysScreen,
+});
+
+const featureFlagsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/feature-flags",
+  component: FeatureFlagsScreen,
+});
+
 const routeTree = rootRoute.addChildren([
   dashboardRoute,
   usersRoute,
@@ -138,6 +187,8 @@ const routeTree = rootRoute.addChildren([
   auditRoute,
   auditDetailRoute,
   settingsRoute,
+  apiKeysRoute,
+  featureFlagsRoute,
 ]);
 
 export const router = createRouter({ routeTree, defaultPreload: false });

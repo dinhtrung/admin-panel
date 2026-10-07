@@ -3,6 +3,8 @@ export { Field, TextInput, SelectInput, TextArea, Checkbox } from "./Field";
 export { StatusMagnet, Badge, Delta } from "./Status";
 export { Panel, PanelHead, Toolbar, Rule, FieldRow } from "./Surface";
 export { Dialog, ConfirmDialog } from "./Dialog";
+export { SidePanel } from "./SidePanel";
+export type { SidePanelProps } from "./SidePanel";
 export { Menu } from "./Menu";
 export type { MenuItem } from "./Menu";
 export { ToastProvider, useToast } from "./Toast";

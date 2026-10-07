@@ -71,7 +71,7 @@ export interface AuditEvent {
   actorId: string;
   actorName: string;
   action: string;
-  targetType: "user" | "role" | "organization" | "session" | "settings";
+  targetType: "user" | "role" | "organization" | "session" | "settings" | "api_key" | "flag";
   targetId: string;
   targetLabel: string;
   ip: string;
@@ -84,6 +84,73 @@ export interface WorkspaceSettings {
   defaultUserStatus: UserStatus;
   defaultLanding: "dashboard" | "users" | "sessions" | "audit";
 }
+
+/** Issued API keys. The secret itself is never stored: only a fingerprint and the last characters,
+ *  which is what lets the interface show a key without being able to reveal it. */
+export type ApiKeyStatus = "active" | "revoked";
+export type ApiEnvironment = "live" | "test";
+
+export interface ApiKey {
+  id: string;
+  name: string;
+  fingerprint: string;
+  lastFour: string;
+  scopes: string[];
+  environment: ApiEnvironment;
+  status: ApiKeyStatus;
+  createdAt: string;
+  lastUsedAt: string | null;
+  createdBy: string;
+}
+
+export const API_SCOPES: { id: string; label: string }[] = [
+  { id: "users:read", label: "Read users" },
+  { id: "users:write", label: "Write users" },
+  { id: "roles:read", label: "Read roles" },
+  { id: "orgs:read", label: "Read organizations" },
+  { id: "sessions:revoke", label: "Revoke sessions" },
+  { id: "audit:read", label: "Read the audit record" },
+];
+
+export const API_ENVIRONMENTS: ApiEnvironment[] = ["live", "test"];
+
+/** Feature flags. `rollout` is a whole percentage; `state` is what the flag is doing right now. */
+export type FlagState = "on" | "off" | "gradual";
+
+export interface FeatureFlag {
+  id: string;
+  key: string;
+  name: string;
+  description: string;
+  state: FlagState;
+  rollout: number;
+  environments: string[];
+  ownerId: string;
+  createdAt: string;
+  updatedAt: string;
+  updatedBy: string;
+}
+
+export const FLAG_ENVIRONMENTS = ["production", "staging", "development"];
+
+export const FLAG_STATES: FlagState[] = ["on", "off", "gradual"];
+
+export interface ApiKeyInput {
+  name: string;
+  scopes: string[];
+  environment: ApiEnvironment;
+}
+
+export interface FeatureFlagInput {
+  key: string;
+  name: string;
+  description: string;
+  state: FlagState;
+  rollout: number;
+  environments: string[];
+  ownerId: string;
+}
+
 
 export interface Identity {
   userId: string;
@@ -99,6 +166,7 @@ export interface ListQuery {
   dir?: "asc" | "desc";
   q?: string;
   status?: string;
+  environment?: string;
   roleId?: string;
   orgId?: string;
   action?: string;

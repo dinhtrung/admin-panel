@@ -18,6 +18,9 @@ const STATUS: Record<string, { code: string; word: string; className: string }> 
   admin: { code: "ADM", word: "Admin", className: "border border-rule-strong text-ink" },
   member: { code: "MEM", word: "Member", className: "border border-rule text-ink-muted" },
   revoked: { code: "REV", word: "Revoked", className: "border border-rule-strong text-ink-muted" },
+  on: { code: "ON", word: "On", className: "bg-plum text-on-plum" },
+  off: { code: "OFF", word: "Off", className: "border border-rule-strong text-ink-muted" },
+  gradual: { code: "GRD", word: "Gradual", className: "bg-selected text-ink-muted" },
 };
 
 export function StatusMagnet({
