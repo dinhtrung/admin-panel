@@ -7,7 +7,7 @@
  *  so; keep the two in step.
  */
 
-export type AppearanceId = "light" | "dark" | "dusk" | "ember";
+export type AppearanceId = "light" | "dark" | "dusk" | "ember" | "sage";
 
 /** What the operator can choose: an appearance, or the machine's preference. */
 export type AppearanceChoice = "system" | AppearanceId;
@@ -51,6 +51,13 @@ export const APPEARANCES: AppearanceDefinition[] = [
     colorScheme: "light",
     saturatedRegion: "the navigation rail, in clay brown",
     useScene: "warm light",
+  },
+  {
+    id: "sage",
+    label: "Sage",
+    colorScheme: "light",
+    saturatedRegion: "the navigation rail, in violet",
+    useScene: "tinted paper",
   },
 ];
 

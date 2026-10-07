@@ -30,6 +30,13 @@ colors:
   clay-tan: "#BF7436"
   clay-brown: "#8C5223"
   clay-dark: "#703E14"
+  # The fifth appearance's seed palette (COLOURlovers 1077213 "Limelicious" by gracefulNothing). The
+  # palette's fifth swatch, #EB4123, is deliberately not used and so is not a token: see
+  # docs/design/palette.md.
+  sage-olive: "#535735"
+  sage: "#ADB08B"
+  sage-leaf: "#729478"
+  sage-violet: "#31114D"
 typography:
   display:
     fontFamily: "Archivo Variable, ui-sans-serif, system-ui, sans-serif"
@@ -251,7 +258,7 @@ tokens in `src/index.css`; registering one is a token block plus an entry in `sr
 and no component, screen or shell file changes. The control lists the registry, and a stored id that is
 no longer registered falls back to the machine's preference instead of leaving the board unstyled.
 
-Three ship today:
+Five ship today:
 
 | Appearance | Seed | Ground | Rail — the one saturated region | Use scene |
 |---|---|---|---|---|
@@ -259,6 +266,7 @@ Three ship today:
 | **Dark** | the same palette, roles remapped | `#181818` | plum `#483048` | a dark room, a screen at night |
 | **Dusk** | "Stormy Dusk", COLOURlovers 100429 | mist `#ABC5C9` | deep `#083A52` | dim light: less glare than Light, still a printed board rather than a black screen |
 | **Ember** | "Clay", COLOURlovers 1001576 | clay `#ECD5C3` | dark brown `#703E14` | a warm light — the one scene the other three do not cover |
+| **Sage** | "Limelicious", COLOURlovers 1077213 | sage `#E6E7DC` | violet `#31114D` | a tinted form paper — the first appearance whose ground is neither a neutral, a mist nor a tan |
 
 The control that presents them is a **switcher**, not a row of segments: a row is sized for a fixed
 number of appearances and quietly stops working as the registry grows, which is the opposite of what a

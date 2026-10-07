@@ -121,27 +121,82 @@ The warm appearance exists for the case the other three do not cover: a warm lig
 daylight, Dusk a dim cool room, Dark the dark — none of them is a room lit by something warm, and the
 rail spends its single saturated region on the warm brown rather than on ink, plum or teal.
 
+## Fourth seed palette — the fifth appearance ("Sage")
+
+| Field | Value |
+|---|---|
+| Site | COLOURlovers |
+| Palette | **Limelicious** |
+| Palette id | 1077213 |
+| Author | `gracefulNothing` |
+| Original URL | https://www.colourlovers.com/palette/1077213/Limelicious |
+| Retrieved from | Internet Archive snapshot `20100122015359` — https://web.archive.org/web/20100122015359id_/http://www.colourlovers.com/palette/1077213/Limelicious |
+
+Same retrieval route as the other three, for the same reason: the live site answers automated requests
+with a Cloudflare challenge and its JSON API was retired, so the record comes from the archived page,
+which carries the palette's five swatches in document order and its title.
+
+### The palette, verbatim, and the roles it took
+
+| Swatch | Role in the fifth appearance |
+|---|---|
+| `#ADB08B` | sage — the ground (30% toward paper, `#E6E7DC`), the panel (12%, `#F5F6F1`) and the focus ring on the rail |
+| `#535735` | olive — the focus ring on the board, and 70/30 with the violet for secondary text (`#49423C`) |
+| `#729478` | leaf — recorded; the appearance needs no further structural colour, so this one is vocabulary rather than token |
+| `#31114D` | violet — the ink, the rail (**the one region owning a saturated ground**) and, 24% into the ground, the selected-row band (`#BBB4BA`) |
+| `#EB4123` | **not used.** At any structural size this red-orange competes with the attention fill, which has to remain the one thing that shouts; recorded here so the exclusion is a decision rather than an omission |
+
+Two decisions worth stating rather than hiding:
+
+- **The palette's one high-chroma member is spent on the rail.** The violet carries the ink as well,
+  because the palette's other dark member is an olive whose own contrast against a sage ground is too
+  low to be body text; the rail is then the region that owns the saturated ground, as the committed-rail
+  rule asks.
+- **The ring changes carrier, and neither carrier is the ink.** The violet on a panel would be a second
+  reading of the ink, and on the rail it would be the rail's own colour — 1.00:1, i.e. no ring at all.
+  The olive (`#535735`, 6.05:1 on the ground and 6.95:1 on a panel) carries the board, and the sage
+  (`#ADB08B`, 7.10:1 on the violet) carries the rail.
+
+### Candidate palettes screened for the fifth appearance
+
+The seed was chosen by screening archived palettes with the composition recipe above: **50 palettes**
+fetched from the Internet Archive, **20** clearing the contrast bar, **9** of those also quiet enough in
+tone (core saturation ≤ 0.50 against Ember's 0.695). The shortlist below was refused, and the refusals
+are recorded so the next appearance does not re-screen them:
+
+| Palette | Id | Refused because |
+|---|---|---|
+| "Blue Cake" by MargaretRose | 1077208 | the quietest of the sample, but its ground is a near-neutral cool white and its rail a desaturated slate — a further reading of colours Light and Dusk already show |
+| "Standard Camo" by Xaviara | 1188389 | a new khaki ground, but its ink and rail are a brown in the same family as Ember's `#703E14` |
+| "slap my face twice" by tvr | 1007149 | the widest contrast margin of the sample (7.82:1), but its ink and secondary colour are plum-blacks sitting beside the semantic plum, and its near-black rail leaves no saturated region to name |
+| "transfusion" by fuzzy ort | 1077234 | ink `#7C3249`, a plum-red — the family of the semantic plum |
+| "Warmer Tones" by wackzingo | 1007174 | secondary colour `#735C84`, an orchid in the plum family |
+| "The Happy Widow" by Ablep | 100713 | its pale swatch is a high-chroma mint doing structural work (ground tint and rail ring) |
+
+The refusals are scoped to that sample: three of them are refusals under the semantic-vocabulary rule
+this change states, and the rule is what the next screening has to apply.
+
 ## Measured contrast, every appearance
 
 Computed from the tokens as the browser resolves them (custom properties are not resolved by
 `getComputedStyle`, so each value is painted onto a probe element and read back), with alpha
 composited before the ratio is taken.
 
-| Pair | Minimum | Light | Dark | Dusk | Ember |
-|---|---|---|---|---|---|
-| body text on the ground | 4.5:1 | 15.58 | 15.58 | 6.38 | **6.24** |
-| body text on a panel | 4.5:1 | 17.76 | 14.38 | 9.71 | **7.70** |
-| muted text on the ground | 4.5:1 | 10.28 | 13.14 | 4.82 | **4.92** |
-| muted text on a panel | 4.5:1 | 11.72 | 12.12 | 7.33 | **6.07** |
-| body text on a selected row | 4.5:1 | 13.14 | 8.10 | 4.69 | **4.68** |
-| rail label on the rail | 4.5:1 | 15.58 | 10.28 | 6.65 | **6.24** |
-| text on a plum fill | 4.5:1 | 10.28 | 10.28 | 10.28 | **10.28** |
-| text on an attention fill | 4.5:1 | 7.29 | 7.29 | 7.29 | **7.29** |
-| focus ring on a panel | 3:1 | 7.29 | 12.12 | 10.12 | **4.61** |
-| focus ring on the ground | 3:1 | 6.40 | 13.14 | 6.65 | **3.74** |
-| focus ring **on the rail** | 3:1 | 13.14 | 8.67 | 6.65 | **6.24** |
-| hairline rule on a panel *(informational)* | — | 1.40 | 1.71 | 1.52 | 1.48 |
-| strong rule on a panel *(informational)* | — | 2.17 | 2.86 | 2.51 | 2.32 |
+| Pair | Minimum | Light | Dark | Dusk | Ember | Sage |
+|---|---|---|---|---|---|---|
+| body text on the ground | 4.5:1 | 15.58 | 15.58 | 6.38 | 6.24 | **12.77** |
+| body text on a panel | 4.5:1 | 17.76 | 14.38 | 9.71 | 7.70 | **14.67** |
+| muted text on the ground | 4.5:1 | 10.28 | 13.14 | 4.82 | 4.92 | **7.91** |
+| muted text on a panel | 4.5:1 | 11.72 | 12.12 | 7.33 | 6.07 | **9.09** |
+| body text on a selected row | 4.5:1 | 13.14 | 8.10 | 4.69 | 4.68 | **7.85** |
+| rail label on the rail | 4.5:1 | 15.58 | 10.28 | 6.65 | 6.24 | **12.77** |
+| text on a plum fill | 4.5:1 | 10.28 | 10.28 | 10.28 | 10.28 | **10.28** |
+| text on an attention fill | 4.5:1 | 7.29 | 7.29 | 7.29 | 7.29 | **7.29** |
+| focus ring on a panel | 3:1 | 7.29 | 12.12 | 10.12 | 4.61 | **6.95** |
+| focus ring on the ground | 3:1 | 6.40 | 13.14 | 6.65 | 3.74 | **6.05** |
+| focus ring **on the rail** | 3:1 | 13.14 | 8.67 | 6.65 | 6.24 | **7.10** |
+| hairline rule on a panel *(informational)* | — | 1.40 | 1.71 | 1.52 | 1.48 | **1.65** |
+| strong rule on a panel *(informational)* | — | 2.17 | 2.86 | 2.51 | 2.32 | **3.04** |
 
 Every appearance passes every minimum; the light column reproduces the 6.40:1 the first palette's
 record already claimed, which is what makes these numbers comparable rather than new. Rules are listed
