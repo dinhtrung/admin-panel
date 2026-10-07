@@ -352,11 +352,9 @@ function SettingsForm({ settings }: { settings: WorkspaceSettings }) {
             description="Light, dark or follow the system. The choice is stored in this browser and restored on the next load."
           />
           <div className="flex flex-col gap-2 px-3 py-3">
-            {/* The shared control carries the rail's colours, so it is drawn on a rail surface
-                rather than on the board — on a light panel its labels would be white on white. */}
-            <div className="w-fit border border-rule-strong bg-rail p-1.5">
-              <AppearanceControl />
-            </div>
+            {/* The control takes the panel tone here: on the rail it is drawn in rail colours, and on
+                a light panel those would be white on white. */}
+            <AppearanceControl tone="panel" />
             <p className="max-w-[60ch] text-[0.6875rem] text-ink-muted">
               Appearance applies as soon as it is chosen; it is not part of the unsaved changes above.
             </p>

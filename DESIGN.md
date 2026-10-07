@@ -13,7 +13,16 @@ colors:
   on-plum: "#F0F0F0"
   attention: "#903078"
   on-attention: "#FFFFFF"
+  overlay-scrim: "#1818188C"
+  shadow-soft: "#00000073"
+  shadow-deep: "#000000B3"
 typography:
+  display:
+    fontFamily: "Archivo Variable, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "2.25rem"
+    fontWeight: 600
+    lineHeight: 1.05
+    letterSpacing: "-0.03em"
   title:
     fontFamily: "Archivo Variable, ui-sans-serif, system-ui, sans-serif"
     fontSize: "1.25rem"
@@ -36,13 +45,20 @@ typography:
     fontWeight: 600
     lineHeight: 1
     letterSpacing: "0.07em"
+  micro:
+    fontFamily: "Azeret Mono Variable, ui-monospace, SFMono-Regular, monospace"
+    fontSize: "0.625rem"
+    fontWeight: 400
+    lineHeight: 1.4
   data:
     fontFamily: "Azeret Mono Variable, ui-monospace, SFMono-Regular, monospace"
     fontSize: "0.6875rem"
     fontWeight: 400
     lineHeight: 1.4
 rounded:
+  hairline: "1px"
   chip: "2px"
+  pill: "9999px"
 spacing:
   cell-x: "12px"
   cell-y: "8px"
@@ -162,6 +178,9 @@ in a corridor, legible across a room and unmistakably not a system default. The 
 not a costume — it appears only where a value is an identifier or a measurement.
 
 ### Hierarchy
+- **Display** (600, 2.25rem/36px, line-height 1.05, tracking −0.03em): the sign-in surface's own
+  heading, and the only place the type scale goes above the title step. It carries the product's name
+  once, on the one screen that has no board to show.
 - **Title** (600, 1.25rem/20px, line-height 1.2, tracking −0.015em): the page's own name, once, in the
   page header. Nothing competes with it.
 - **Lead** (400, 0.875rem/14px, 1.5): panel headings and empty-state statements.
@@ -170,6 +189,8 @@ not a costume — it appears only where a value is an identifier or a measuremen
 - **Label** (600, 0.6875rem/11px, tracking 0.07em, uppercase): column headers, field labels, section
   names. The board's printed label grammar.
 - **Data** (Azeret Mono, 0.6875rem/11px): ids, IPs, slugs, action names, absolute timestamps.
+- **Micro** (Azeret Mono, 0.625rem/10px): the second line under an identity — an email address or a
+  fingerprint — where the label above already carries the meaning.
 
 ### Named Rules
 **The Tabular Rule.** Any number the reader compares vertically is set with `font-variant-numeric:
@@ -199,9 +220,11 @@ lift, no bevel and no gradient. A row is separated from the next by a 1px rule; 
 tinted band; a state change moves a token rather than animating a surface.
 
 ### Shadow Vocabulary
-- **Overlay** (`0 10px 24px -12px rgb(0 0 0 / 0.45)`): dialogs, menus and toasts only — the one place
-  where a surface genuinely floats above the board. In dark theme the same role is deepened to
-  `0 12px 28px -12px rgb(0 0 0 / 0.7)`.
+- **Overlay** (`0 10px 24px -12px rgb(0 0 0 / 0.45)` — the `shadow-soft` token): dialogs, menus and
+  toasts only — the one place where a surface genuinely floats above the board. In dark theme the same
+  role deepens to `0 12px 28px -12px rgb(0 0 0 / 0.7)` (the `shadow-deep` token).
+- **Scrim** (`rgb(24 24 24 / 55%)` — the `overlay-scrim` token): the backdrop behind a modal dialog and
+  behind the side panel when it takes the full width. It dims the board; it is not a surface.
 
 ### Named Rules
 **The Ruled-Not-Shadowed Rule.** If two regions need separating, draw a line. Reach for the overlay
@@ -211,9 +234,10 @@ shadow only when the region floats above the board and can be dismissed.
 
 Square to nearly square: the only rounding in the system is a **2px chip radius**, applied to buttons,
 fields, magnets, badges and checkboxes alike, and it is what makes a state token read as a physical
-magnet rather than a pill. Rules are hairlines (1px). There is no clipping, no blob, no circle except
-the loading spinner, no decorative geometry. Status codes, initials and counts sit inside rectangles;
-that is the entire form vocabulary.
+magnet rather than a pill. Rules are hairlines (1px) and never rounded. The single exception to the
+square vocabulary is the **pill** (9999px), used only by the loading spinner — the one place a full
+circle appears in the interface. There is no clipping, no blob, no decorative geometry. Status codes,
+initials and counts sit inside rectangles; that is the entire form vocabulary.
 
 ## Components
 

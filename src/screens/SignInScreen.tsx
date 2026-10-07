@@ -35,14 +35,13 @@ export function SignInScreen({ expired = false }: { expired?: boolean }) {
     <div className="min-h-svh bg-ground">
       <div className="mx-auto grid min-h-svh max-w-5xl grid-cols-1 lg:grid-cols-[1fr_20rem]">
         <div className="flex flex-col justify-center px-5 py-10">
-          <p className="label text-ink-muted">Synthetic demo board</p>
-          <h1 className="mt-2 text-[2.25rem] font-semibold leading-[1.05] tracking-[-0.03em] text-ink">
+          <h1 className="text-[2.25rem] font-semibold leading-[1.05] tracking-[-0.03em] text-ink">
             admin-panel
           </h1>
           <p className="mt-3 max-w-[58ch] text-body text-ink-muted">
-            Users, roles, organizations, active sessions and the audit record — operable end to end on
-            authored data, with no server and no account of your own. Every write you make lands in the
-            audit record, and every list works empty as well as full.
+            A synthetic demo board: users, roles, organizations, active sessions and the audit record —
+            operable end to end on authored data, with no server and no account of your own. Every write
+            you make lands in the audit record, and every list works empty as well as full.
           </p>
           <dl className="mt-6 grid max-w-[46ch] grid-cols-[9rem_1fr] gap-y-1.5 text-[0.6875rem]">
             <dt className="label text-ink-muted">Data source</dt>

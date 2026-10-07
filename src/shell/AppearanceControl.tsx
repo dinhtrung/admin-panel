@@ -11,7 +11,13 @@ const OPTIONS: { value: Appearance; label: string }[] = [
   { value: "dark", label: "Dark" },
 ];
 
-export function AppearanceControl({ compact = false }: { compact?: boolean }) {
+export function AppearanceControl({
+  compact = false,
+  tone = "rail",
+}: {
+  compact?: boolean;
+  tone?: "rail" | "panel";
+}) {
   const [choice, setChoice] = useState<Appearance>(() => (typeof window === "undefined" ? "system" : readAppearance()));
 
   useEffect(() => {
@@ -20,27 +26,29 @@ export function AppearanceControl({ compact = false }: { compact?: boolean }) {
 
   useEffect(() => watchSystemAppearance(() => setChoice(readAppearance())), []);
 
+  // The control is drawn on the rail in the shell and on a panel in Settings, so its colours come
+  // from the surface it sits on rather than from one hard-coded tone.
+  const frame = tone === "rail" ? "border-rail-ink/30" : "border-rule-strong";
+  const selected = tone === "rail" ? "bg-rail-ink text-rail" : "bg-plum text-on-plum";
+  const idle = tone === "rail" ? "text-rail-ink/75 hover:text-rail-ink" : "text-ink-muted hover:text-ink";
+
   return (
-    <div
-      role="radiogroup"
-      aria-label="Appearance"
-      className={cn("inline-flex border border-rail-ink/30", compact ? "w-full" : "")}
-    >
+    <div role="radiogroup" aria-label="Appearance" className={cn("inline-flex border", frame, compact ? "w-full" : "")}>
       {OPTIONS.map((option) => {
-        const selected = choice === option.value;
+        const isSelected = choice === option.value;
         return (
           <button
             key={option.value}
             type="button"
             role="radio"
-            aria-checked={selected}
+            aria-checked={isSelected}
             onClick={() => {
               setChoice(option.value);
               writeAppearance(option.value);
             }}
             className={cn(
               "relative flex-1 px-2 py-1 text-[0.6875rem] font-semibold transition-colors after:absolute after:-inset-y-1 after:content-['']",
-              selected ? "bg-rail-ink text-rail" : "text-rail-ink/75 hover:text-rail-ink",
+              isSelected ? selected : idle,
             )}
           >
             {option.label}

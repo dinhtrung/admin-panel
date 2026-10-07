@@ -34,6 +34,13 @@ that can see the board but change nothing.
   and revocation of one or all others (revoking your own ends your session, as it should).
 - **Audit record** — append-only, filterable by actor/action/target/date, with a field-level
   before → after detail view, and **no edit or delete affordance anywhere**.
+- **API keys** — a directory whose create, edit and revoke all happen **in a modal dialog**. The
+  generated secret is shown exactly once and is unrecoverable afterwards (the store keeps a
+  fingerprint), revocation requires the key's own name typed, and a revoked key opens read-only with
+  no path back.
+- **Feature flags** — create and edit in a **panel that slides in from the right at half width**, so
+  the directory stays visible *and usable* beside the record you are changing; dismissing it with
+  unsaved edits asks first; deletion is confirmed against the flag's own key.
 - **Settings** — workspace and personal preferences, slug validation, unsaved-change protection, and a
   destructive zone that requires a typed confirmation.
 
@@ -59,11 +66,20 @@ npm run gate
 # → build → impeccable detect (exit 0)
 ```
 
-Measured on the current commit: `openspec validate --specs --strict` → **15 passed, 0 failed**;
-`impeccable detect` → **`[]`** (0 findings, exit 0); typecheck clean; lint clean apart from
-fast-refresh advisories. The design detector runs over `dist/`, where it can actually read the shipped
-CSS — pointed at `src/` alone it sees nothing and always reports zero, which is worth knowing before
-trusting a green design gate in someone else's repository.
+Measured on the current commit: `openspec validate --all --strict` → **17 passed, 0 failed** after this
+change is archived (15 before it); `impeccable detect` → exit 0, with **2 advisories**, both of which
+are TanStack Router's built-in fallback error component shipping its own inline constants
+(`fontSize: 1rem`, `borderRadius: .25rem`) — code the panel overrides with its own `errorComponent`
+and never renders. Everything the detector reads about *this* interface is documented in `DESIGN.md`:
+the type ramp (including the display and micro steps), radii (hairline / chip / pill), the palette and
+the overlay scrim.
+
+Two things worth knowing before trusting a green design gate elsewhere. The detector runs here over
+`dist/`, where it can actually read the shipped CSS — pointed at `src/` alone it sees nothing and
+always reports zero. And Tailwind v4's automatic content detection scans *prose*: with the default
+scan, the words "rounded" and "shadow" in this repository's own documentation emitted `.rounded` and
+Tailwind's entire shadow machinery into the stylesheet, which is why the build declares
+`source(none)` and lists its sources explicitly.
 
 ## How it is put together
 

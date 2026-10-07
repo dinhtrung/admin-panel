@@ -22,9 +22,18 @@ export function BoardControls() {
   const setFailure = (mode: FailureMode) => {
     configure({ failure: mode });
     setFailureState(mode);
+    // Force the armed failure to show immediately: with cached queries the board would serve its data
+    // and the switch would look like it did nothing.
+    void queryClient.invalidateQueries();
     toast.problem(
-      mode === "off" ? "Failure switch off" : mode === "next" ? "The next request will fail" : "Every request will fail",
-      mode === "off" ? undefined : "Reload a list to see the failed state and its retry path.",
+      mode === "off"
+        ? "Failure switch off"
+        : mode === "next"
+          ? "The next request will fail"
+          : "Every request will fail",
+      mode === "off"
+        ? undefined
+        : "The board is refetching now. Turn the switch off, or use the retry path on the failed view.",
     );
   };
 
@@ -32,14 +41,22 @@ export function BoardControls() {
     const next = latency > 0 ? 0 : 160;
     configure({ latencyMs: next });
     setLatencyState(next);
+    void queryClient.invalidateQueries();
     toast.done(next === 0 ? "Latency removed for this session" : "Latency restored (160 ms)");
   };
 
   return (
     <>
       <Menu
-        label="Board controls"
-        trigger={<Database size={14} />}
+        label={failure === "off" ? "Board controls" : "Board controls — requests are set to fail"}
+        trigger={
+          <span className="relative inline-flex">
+            <Database size={14} />
+            {failure !== "off" ? (
+              <span aria-hidden="true" className="absolute -top-1 -right-1 block size-1.5 bg-attention" />
+            ) : null}
+          </span>
+        }
         triggerClassName="text-rail-ink hover:bg-rail-ink/15"
         items={[
           { id: "fail-next", label: "Fail the next request", onSelect: () => setFailure("next") },

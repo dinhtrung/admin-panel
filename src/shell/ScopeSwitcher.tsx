@@ -17,7 +17,7 @@ export function ScopeSwitcher({ variant = "rail" }: { variant?: "rail" | "page" 
         onChange={(e) => setOrgId(e.target.value || null)}
         className={
           variant === "rail"
-            ? "min-h-7 max-w-[11rem] truncate rounded-chip border border-rail-ink/30 bg-transparent px-1.5 text-[0.6875rem] font-semibold text-rail-ink"
+            ? "min-h-7 max-w-[11rem] truncate rounded-chip border border-rail-ink/30 bg-rail px-1.5 text-[0.6875rem] font-semibold text-rail-ink"
             : "min-h-8 max-w-[14rem] truncate rounded-chip border border-rule-strong bg-panel px-1.5 text-body text-ink"
         }
       >

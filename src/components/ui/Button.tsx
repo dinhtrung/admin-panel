@@ -30,7 +30,7 @@ const VARIANTS: Record<Variant, string> = {
 
 const SIZES: Record<Size, string> = {
   sm: "min-h-7 px-2 text-[0.6875rem]",
-  md: "min-h-9 px-3 text-body",
+  md: "min-h-[var(--density-control-h)] px-3 text-body",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(

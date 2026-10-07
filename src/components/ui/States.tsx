@@ -11,7 +11,7 @@ export function LoadingRows({ rows = 6, className }: { rows?: number; className?
     <div className={cn("divide-y divide-[var(--rule)]", className)} aria-busy="true" aria-live="polite">
       <span className="sr-only">Loading records</span>
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="flex items-center gap-3 px-3 py-2.5">
+        <div key={i} className="flex items-center gap-3 px-3 py-[var(--density-row-pad-y)]">
           <span className="h-3 w-1/4 rounded-chip bg-hover" />
           <span className="h-3 w-1/6 rounded-chip bg-hover" />
           <span className="ml-auto h-3 w-16 rounded-chip bg-hover" />

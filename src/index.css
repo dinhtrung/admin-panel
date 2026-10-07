@@ -1,7 +1,16 @@
 /* Self-hosted faces — bundled at build time, no hosted stylesheet, no CDN, no data URI. */
 @import "@fontsource-variable/archivo/wght.css";
 @import "@fontsource-variable/azeret-mono/wght.css";
-@import "tailwindcss";
+
+/* Only the application's own source is scanned for class names. Tailwind v4 otherwise scans every
+   non-ignored file in the project, which means the design and spec prose in DESIGN.md and
+   openspec/** gets read as candidate class names: the words "rounded" and "shadow" in a sentence
+   emitted .rounded and Tailwind's whole shadow machinery into the shipped CSS, and the design
+   detector then reported them as off-ramp values. Explicit sources keep the stylesheet equal to
+   what the interface actually uses. */
+@import "tailwindcss" source(none);
+@source "../src";
+@source "../index.html";
 
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
@@ -13,6 +22,11 @@
 */
 :root {
   color-scheme: light;
+
+  /* Display density: the two values the interface actually reflows by. Comfortable is the default;
+     the compact step tightens rows and controls without changing the type scale. */
+  --density-row-pad-y: 0.5rem;
+  --density-control-h: 2.25rem;
 
   --palette-ink: #181818;
   --palette-ground: #f0f0f0;
@@ -49,7 +63,6 @@
 
 [data-theme="dark"] {
   color-scheme: dark;
-
   --board-ground: var(--palette-ink);
   --board-panel: color-mix(in srgb, var(--palette-plum) 24%, var(--palette-ink));
   --board-rail: var(--palette-plum);
@@ -71,6 +84,12 @@
   --focus: var(--palette-tint);
 
   --overlay-shadow: 0 12px 28px -12px rgb(0 0 0 / 0.7);
+}
+
+/* The compact step, chosen in Settings and applied before the first paint by the inline script. */
+[data-density="compact"] {
+  --density-row-pad-y: 0.25rem;
+  --density-control-h: 1.875rem;
 }
 
 @theme inline {
@@ -112,6 +131,21 @@
 }
 
 @layer base {
+  /* A native dropdown list is painted by the platform, not by the page. A select with a transparent
+     background therefore hands the popup the platform's white while keeping the select's own text
+     colour — which is white-on-white in the dark rail, and light-on-white in dark theme. So: every
+     select carries an opaque background, and every option states both of its colours. The rail's
+     select overrides the background with a utility class; the popup stays a readable system surface. */
+  select {
+    background-color: var(--board-panel);
+    color: var(--ink);
+  }
+
+  option {
+    background-color: var(--board-panel);
+    color: var(--ink);
+  }
+
   * {
     scrollbar-color: var(--rule-strong) transparent;
     scrollbar-width: thin;
@@ -208,6 +242,16 @@
   }
   to {
     opacity: 1;
+    transform: none;
+  }
+}
+
+/* The side panel's entrance: one transform, inside the reduced-motion guard below. */
+@keyframes panel-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
     transform: none;
   }
 }

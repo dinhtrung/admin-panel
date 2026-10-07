@@ -33,13 +33,38 @@
         "displayName": "Board Ink",
         "canonical": "#181818",
         "tonalRamp": ["#0B0B0B", "#181818", "#2A2A2A", "#414141", "#5E5E5E", "#8A8A8A", "#BFBFBF", "#F0F0F0"]
+      },
+      "overlay-scrim": {
+        "role": "neutral",
+        "displayName": "Overlay Scrim",
+        "canonical": "#1818188C",
+        "tonalRamp": ["#1818180A", "#1818181F", "#18181833", "#1818184D", "#1818188C", "#181818B3", "#181818D9", "#181818"]
+      },
+      "shadow-soft": {
+        "role": "neutral",
+        "displayName": "Overlay Shadow (light)",
+        "canonical": "#00000073",
+        "tonalRamp": ["#0000001A", "#00000033", "#00000040", "#00000059", "#00000073", "#00000099", "#000000BF", "#000000E6"]
+      },
+      "shadow-deep": {
+        "role": "neutral",
+        "displayName": "Overlay Shadow (dark)",
+        "canonical": "#000000B3",
+        "tonalRamp": ["#0000001A", "#00000033", "#0000004D", "#00000073", "#000000B3", "#000000D9", "#000000F2", "#000000"]
       }
     },
     "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The sign-in surface's own heading — the only step above title." },
       "title": { "displayName": "Title", "purpose": "The page's own name, once, in the page header." },
       "label": { "displayName": "Printed Label", "purpose": "Column headers, field labels, nav group names — uppercase, tracked." },
       "body": { "displayName": "Body", "purpose": "Cells, values and sentences." },
-      "data": { "displayName": "Data (mono)", "purpose": "Identifiers, IPs, slugs, action names, absolute timestamps only." }
+      "data": { "displayName": "Data (mono)", "purpose": "Identifiers, IPs, slugs, action names, absolute timestamps only." },
+      "micro": { "displayName": "Micro (mono)", "purpose": "The second line under an identity: an email address or a fingerprint." }
+    },
+    "shapes": {
+      "hairline": "1px — rules only, never rounded",
+      "chip": "2px — buttons, fields, magnets, badges, checkboxes",
+      "pill": "9999px — the loading spinner, the only circle in the interface"
     },
     "shadows": [
       { "name": "overlay", "value": "0 10px 24px -12px rgb(0 0 0 / 0.45)", "purpose": "Dialogs, menus and toasts — the only floating surfaces in the system." },

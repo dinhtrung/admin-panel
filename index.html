@@ -17,8 +17,13 @@
           var dark = choice === "dark" ||
             (choice === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
           document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+          // Display density is applied here too: it has to be in effect on the first paint, or the
+          // board reflows once the app mounts.
+          var density = localStorage.getItem("admin-panel.density");
+          document.documentElement.setAttribute("data-density", density === "compact" ? "compact" : "comfortable");
         } catch (e) {
           document.documentElement.setAttribute("data-theme", "light");
+          document.documentElement.setAttribute("data-density", "comfortable");
         }
       })();
     </script>

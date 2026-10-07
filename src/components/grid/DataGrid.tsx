@@ -223,7 +223,7 @@ export function DataGrid<T>({
                     style={{ ["--sweep-index" as string]: String(Math.min(index, 12)) }}
                   >
                     {selectable ? (
-                      <td className="px-3 py-2">
+                      <td className="px-3 py-[var(--density-row-pad-y)]">
                         <input
                           type="checkbox"
                           aria-label={`Select ${id}`}
@@ -241,7 +241,10 @@ export function DataGrid<T>({
                     {visible.map((column, columnIndex) => (
                       <td
                         key={column.id}
-                        className={cn("px-3 py-2 text-body text-ink align-middle", column.align === "right" && "text-right")}
+                        className={cn(
+                          "px-3 py-[var(--density-row-pad-y)] text-body text-ink align-middle",
+                          column.align === "right" && "text-right",
+                        )}
                         onClick={onRowClick && columnIndex === 0 ? () => onRowClick(row) : undefined}
                       >
                         {column.cell(row)}

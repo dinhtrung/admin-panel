@@ -3,10 +3,11 @@
 
 import { forwardRef, useId } from "react";
 import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
+import { ChevronDown } from "lucide-react";
 import { cn } from "../../lib/cn";
 
 const CONTROL =
-  "w-full min-h-9 rounded-chip border border-rule-strong bg-panel px-2 text-body text-ink " +
+  "w-full min-h-[var(--density-control-h)] rounded-chip border border-rule-strong bg-panel px-2 text-body text-ink " +
   "placeholder:text-ink-muted/70 disabled:cursor-not-allowed disabled:opacity-50";
 
 export function Field({
@@ -88,25 +89,30 @@ export const SelectInput = forwardRef<HTMLSelectElement, SelectInputProps>(funct
   const selectId = id ?? generated;
   return (
     <Field label={label} hint={hint} error={error} htmlFor={selectId}>
-      <select
-        ref={ref}
-        id={selectId}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={error ? `${selectId}-error` : hint ? `${selectId}-hint` : undefined}
-        className={cn(CONTROL, "appearance-none bg-[right_0.5rem_center] pr-7", error && "border-attention", className)}
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4.5 6 8.5 10 4.5' fill='none' stroke='%23483048' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E\")",
-          backgroundRepeat: "no-repeat",
-        }}
-        {...rest}
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+      {/* The chevron is drawn as an element rather than baked into a background image: an inline SVG
+          data-URI cannot inherit `currentColor`, so a hard-coded stroke left the only dropdown
+          affordance at 1.39:1 against the dark panel. As an element it takes the theme's own token. */}
+      <div className="relative">
+        <select
+          ref={ref}
+          id={selectId}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? `${selectId}-error` : hint ? `${selectId}-hint` : undefined}
+          className={cn(CONTROL, "appearance-none pr-7", error && "border-attention", className)}
+          {...rest}
+        >
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        <ChevronDown
+          size={12}
+          aria-hidden="true"
+          className="pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 text-ink-muted"
+        />
+      </div>
     </Field>
   );
 });
