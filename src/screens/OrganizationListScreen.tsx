@@ -131,8 +131,8 @@ function OrganizationDirectory() {
         crumbs={[{ label: "Board", to: "/" }, { label: "Organizations" }]}
         description="Every organization on the board, with its plan, status and membership. Open one to read its record and manage its members."
       />
-      <div className="px-3 py-3 sm:px-5">
-        <Panel>
+      <div className="min-w-0">
+        <Panel className="border-x-0 border-t-0">
           <Toolbar>
             <GridSearch
               value={search}

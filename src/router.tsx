@@ -2,7 +2,13 @@
  *
  *  Code-based routes rather than a generated tree: the addresses are part of the frozen contract
  *  (deep links must resolve), so they are declared in one file. The root route owns the auth gate and
- *  the shell; each screen owns its own header and permission gate. */
+ *  the shell; each screen owns its own header and permission gate.
+ *
+ *  The trial's second change: a record is a **child** of the board it belongs to, not a sibling of it.
+ *  The parent renders the board and the child renders the record as a drawer over it (see
+ *  `screens/record-drawers.tsx`), so `/users/usr_014` still resolves on a cold load — the board mounts,
+ *  then the record rises from the bottom edge — and the operator never loses the list they were
+ *  reading. A record address is still an address: it can be pasted, reloaded and shared. */
 
 import { useEffect, useRef } from "react";
 import { createRootRoute, createRoute, createRouter, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
@@ -13,18 +19,17 @@ import { getSettings } from "./mock/api";
 import type { WorkspaceSettings } from "./mock/types";
 import { SignInScreen } from "./screens/SignInScreen";
 import { DashboardScreen } from "./screens/DashboardScreen";
-import { UserListScreen } from "./screens/UserListScreen";
-import { UserDetailScreen } from "./screens/UserDetailScreen";
-import { RoleListScreen } from "./screens/RoleListScreen";
-import { RoleDetailScreen } from "./screens/RoleDetailScreen";
-import { OrganizationListScreen } from "./screens/OrganizationListScreen";
-import { OrganizationDetailScreen } from "./screens/OrganizationDetailScreen";
 import { SessionListScreen } from "./screens/SessionListScreen";
-import { AuditListScreen } from "./screens/AuditListScreen";
-import { AuditDetailScreen } from "./screens/AuditDetailScreen";
 import { SettingsScreen } from "./screens/SettingsScreen";
 import { ApiKeysScreen } from "./screens/ApiKeysScreen";
 import { FeatureFlagsScreen } from "./screens/FeatureFlagsScreen";
+import { AuditSection, OrganizationsSection, RolesSection, UsersSection } from "./shell/BoardSections";
+import {
+  AuditEventRecordDrawer,
+  OrganizationRecordDrawer,
+  RoleRecordDrawer,
+  UserRecordDrawer,
+} from "./screens/record-drawers";
 import { Button, ErrorState, LoadingRows, NotFoundState } from "./components/ui";
 
 /** The saved default landing surface, as an address. */
@@ -101,42 +106,44 @@ const rootRoute = createRootRoute({
   notFoundComponent: RouteNotFound,
 });
 
+/** A board that hosts a record drawer: the board stays mounted under the record, which is the whole
+ *  point of the pattern — the operator keeps the list they were reading. */
 const dashboardRoute = createRoute({ getParentRoute: () => rootRoute, path: "/", component: DashboardScreen });
 
-const usersRoute = createRoute({ getParentRoute: () => rootRoute, path: "/users", component: UserListScreen });
+const usersRoute = createRoute({ getParentRoute: () => rootRoute, path: "/users", component: UsersSection });
 
 const userDetailRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/users/$userId",
+  getParentRoute: () => usersRoute,
+  path: "$userId",
   component: function UserDetailRoute() {
     const { userId } = userDetailRoute.useParams();
-    return <UserDetailScreen userId={userId} />;
+    return <UserRecordDrawer userId={userId} />;
   },
 });
 
-const rolesRoute = createRoute({ getParentRoute: () => rootRoute, path: "/roles", component: RoleListScreen });
+const rolesRoute = createRoute({ getParentRoute: () => rootRoute, path: "/roles", component: RolesSection });
 
 const roleDetailRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/roles/$roleId",
+  getParentRoute: () => rolesRoute,
+  path: "$roleId",
   component: function RoleDetailRoute() {
     const { roleId } = roleDetailRoute.useParams();
-    return <RoleDetailScreen roleId={roleId} />;
+    return <RoleRecordDrawer roleId={roleId} />;
   },
 });
 
 const organizationsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/organizations",
-  component: OrganizationListScreen,
+  component: OrganizationsSection,
 });
 
 const organizationDetailRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/organizations/$orgId",
+  getParentRoute: () => organizationsRoute,
+  path: "$orgId",
   component: function OrganizationDetailRoute() {
     const { orgId } = organizationDetailRoute.useParams();
-    return <OrganizationDetailScreen orgId={orgId} />;
+    return <OrganizationRecordDrawer orgId={orgId} />;
   },
 });
 
@@ -146,14 +153,14 @@ const sessionsRoute = createRoute({
   component: SessionListScreen,
 });
 
-const auditRoute = createRoute({ getParentRoute: () => rootRoute, path: "/audit", component: AuditListScreen });
+const auditRoute = createRoute({ getParentRoute: () => rootRoute, path: "/audit", component: AuditSection });
 
 const auditDetailRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/audit/$eventId",
+  getParentRoute: () => auditRoute,
+  path: "$eventId",
   component: function AuditDetailRoute() {
     const { eventId } = auditDetailRoute.useParams();
-    return <AuditDetailScreen eventId={eventId} />;
+    return <AuditEventRecordDrawer eventId={eventId} />;
   },
 });
 
@@ -177,15 +184,11 @@ const featureFlagsRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
   dashboardRoute,
-  usersRoute,
-  userDetailRoute,
-  rolesRoute,
-  roleDetailRoute,
-  organizationsRoute,
-  organizationDetailRoute,
+  usersRoute.addChildren([userDetailRoute]),
+  rolesRoute.addChildren([roleDetailRoute]),
+  organizationsRoute.addChildren([organizationDetailRoute]),
   sessionsRoute,
-  auditRoute,
-  auditDetailRoute,
+  auditRoute.addChildren([auditDetailRoute]),
   settingsRoute,
   apiKeysRoute,
   featureFlagsRoute,

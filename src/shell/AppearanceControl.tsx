@@ -43,9 +43,13 @@ function Swatch({ id }: { id: AppearanceId }) {
 export function AppearanceControl({
   compact = false,
   tone = "rail",
+  placement,
 }: {
   compact?: boolean;
   tone?: "rail" | "panel";
+  /** Where the list opens. The default follows the surface — a rail sits at the bottom of the
+   *  viewport so it opens upward — but a switcher in the top band must open downward. */
+  placement?: "above" | "below";
 }) {
   const [choice, setChoice] = useState<AppearanceChoice>(() =>
     typeof window === "undefined" ? "system" : readAppearance(),
@@ -97,8 +101,9 @@ export function AppearanceControl({
     <Menu
       label="Appearance"
       triggerVariant="text"
-      // The rail's switcher sits at the bottom of the viewport, so its list opens upward.
-      placement={tone === "rail" ? "above" : "below"}
+      // The rail's switcher sits at the bottom of the viewport, so its list opens upward; a band
+      // switcher passes `below`.
+      placement={placement ?? (tone === "rail" ? "above" : "below")}
       align={tone === "rail" ? "start" : "end"}
       items={items}
       triggerClassName={cn(

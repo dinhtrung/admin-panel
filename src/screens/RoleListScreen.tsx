@@ -176,8 +176,8 @@ export function RoleListScreen() {
         actions={<Gate permission="roles.write">{newRoleButton}</Gate>}
       />
 
-      <div className="flex flex-col gap-4 px-3 py-4 sm:px-5">
-        <Panel>
+      <div className="flex flex-col">
+        <Panel className="border-x-0 border-t-0">
           <Toolbar>
             <GridSearch
               value={list.q}

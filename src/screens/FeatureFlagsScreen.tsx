@@ -525,8 +525,8 @@ function FeatureFlagsBoard() {
         }
       />
 
-      <div className="min-w-0 px-3 py-3 sm:px-5">
-        <Panel>
+      <div className="min-w-0">
+        <Panel className="border-x-0 border-t-0">
           <Toolbar>
             <GridSearch value={list.q} onChange={(q) => setList({ q })} placeholder="Search by name or key" />
             <div className="w-40">

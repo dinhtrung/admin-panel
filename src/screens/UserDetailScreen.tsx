@@ -60,15 +60,18 @@ function transitionCopy(user: User, status: UserStatus) {
   };
 }
 
-export function UserDetailScreen({ userId }: { userId: string }) {
+export function UserDetailScreen({ userId, embedded = false }: { userId: string; embedded?: boolean }) {
   return (
     <RequirePermission permission="users.read" what="This user's record" title="User">
-      <UserDetail userId={userId} />
+      <UserDetail userId={userId} embedded={embedded} />
     </RequirePermission>
   );
 }
 
-function UserDetail({ userId }: { userId: string }) {
+/** `embedded` is the drawer's presentation of the same record. The screen then draws no board header
+ *  and no page gutters — the drawer supplies both — and the profile panel drops its own name block,
+ *  because the drawer's head already states the name, the address and the state. */
+function UserDetail({ userId, embedded = false }: { userId: string; embedded?: boolean }) {
   const detailQuery = useQuery({ queryKey: ["user", userId], queryFn: () => getUser(userId) });
   const data = detailQuery.data;
   const user = data?.user;
@@ -82,8 +85,8 @@ function UserDetail({ userId }: { userId: string }) {
   if (detailQuery.isLoading) {
     return (
       <>
-        <PageHeader title="User" crumbs={crumbs} />
-        <div className="min-w-0 px-3 py-3 sm:px-5">
+        {embedded ? null : <PageHeader title="User" crumbs={crumbs} />}
+        <div className={embedded ? "min-w-0" : "min-w-0 px-3 py-3 sm:px-5"}>
           <LoadingRows rows={6} />
         </div>
       </>
@@ -94,8 +97,8 @@ function UserDetail({ userId }: { userId: string }) {
     const notFound = isApiError(detailQuery.error) && detailQuery.error.code === "not_found";
     return (
       <>
-        <PageHeader title="User" crumbs={crumbs} />
-        <div className="min-w-0 px-3 py-3 sm:px-5">
+        {embedded ? null : <PageHeader title="User" crumbs={crumbs} />}
+        <div className={embedded ? "min-w-0" : "min-w-0 px-3 py-3 sm:px-5"}>
           <Panel>
             {notFound ? (
               <NotFoundState what="user">
@@ -121,15 +124,23 @@ function UserDetail({ userId }: { userId: string }) {
 
   return (
     <>
-      <PageHeader
-        title={user.name}
-        crumbs={crumbs}
-        count={<StatusMagnet status={user.status} />}
-        description={user.email}
-      />
+      {embedded ? null : (
+        <PageHeader
+          title={user.name}
+          crumbs={crumbs}
+          count={<StatusMagnet status={user.status} />}
+          description={user.email}
+        />
+      )}
 
-      <div className="mx-auto flex min-w-0 max-w-5xl flex-col gap-3 px-3 py-3 sm:px-5">
-        <ProfilePanel user={user} />
+      <div
+        className={
+          embedded
+            ? "flex min-w-0 flex-col gap-3"
+            : "mx-auto flex min-w-0 max-w-5xl flex-col gap-3 px-3 py-3 sm:px-5"
+        }
+      >
+        <ProfilePanel user={user} headless={embedded} />
 
         <Panel>
           <PanelHead title="Status" actions={<StatusMagnet status={user.status} />} />
@@ -171,23 +182,25 @@ function UserDetail({ userId }: { userId: string }) {
   );
 }
 
-function ProfilePanel({ user }: { user: User }) {
+function ProfilePanel({ user, headless = false }: { user: User; headless?: boolean }) {
   return (
     <Panel>
       <PanelHead title="Profile" />
       <div className="flex flex-col gap-3 px-3 py-3">
-        <div className="flex items-start gap-3">
-          <span
-            aria-hidden="true"
-            className="flex size-10 shrink-0 items-center justify-center rounded-chip bg-plum font-mono text-body font-semibold text-on-plum"
-          >
-            {initials(user.name)}
-          </span>
-          <div className="min-w-0">
-            <p className="break-words text-lead font-semibold text-ink">{user.name}</p>
-            <p className="break-all font-mono text-body text-ink-muted">{user.email}</p>
+        {headless ? null : (
+          <div className="flex items-start gap-3">
+            <span
+              aria-hidden="true"
+              className="flex size-10 shrink-0 items-center justify-center rounded-chip bg-plum font-mono text-body font-semibold text-on-plum"
+            >
+              {initials(user.name)}
+            </span>
+            <div className="min-w-0">
+              <p className="break-words text-lead font-semibold text-ink">{user.name}</p>
+              <p className="break-all font-mono text-body text-ink-muted">{user.email}</p>
+            </div>
           </div>
-        </div>
+        )}
         <div className="grid gap-x-6 gap-y-1 sm:grid-cols-2">
           <FieldRow label="Status">
             <StatusMagnet status={user.status} />

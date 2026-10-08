@@ -2,16 +2,33 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { listOrganizations } from "../mock/api";
+import { cn } from "../lib/cn";
 import { useScope } from "./scope";
 
-export function ScopeSwitcher({ variant = "rail" }: { variant?: "rail" | "page" }) {
+export function ScopeSwitcher({
+  variant = "rail",
+  showLabel = true,
+}: {
+  variant?: "rail" | "page";
+  /** The band hides the word: the select states the scope, and the label would cost ~48px of a row
+   *  that has to carry the navigation too. The accessible name stays — the label element still wraps
+   *  the control. */
+  showLabel?: boolean;
+}) {
   const { orgId, setOrgId } = useScope();
   const { data } = useQuery({ queryKey: ["organizations", "scope"], queryFn: () => listOrganizations({ pageSize: 50 }) });
   const organizations = data?.items ?? [];
 
   return (
     <label className="flex items-center gap-2">
-      <span className={variant === "rail" ? "label text-rail-ink/70" : "label text-ink-muted"}>Scope</span>
+      <span
+        className={cn(
+          variant === "rail" ? "label text-rail-ink/70" : "label text-ink-muted",
+          !showLabel && "sr-only",
+        )}
+      >
+        Scope
+      </span>
       <select
         value={orgId ?? ""}
         onChange={(e) => setOrgId(e.target.value || null)}

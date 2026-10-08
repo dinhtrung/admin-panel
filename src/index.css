@@ -418,6 +418,16 @@
   }
 }
 
+/* The record drawer's entrance: the same one-transform rule, from the bottom edge. */
+@keyframes drawer-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
